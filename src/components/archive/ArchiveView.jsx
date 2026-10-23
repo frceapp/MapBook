@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { CATEGORIES, CATEGORY_CONFIG } from '../../services/yogyakartaPlaces';
+import { YOGYAKARTA_REAL_FALLBACK_PHOTOS } from '../../services/googlePlacesService';
 
 /**
  * PAGE 4: Archive & Sertifikat Pencapaian (Full Overlay Drawer / View)
@@ -49,7 +50,7 @@ export default function ArchiveView() {
     selectPlaceOnMap,
     simulateComplete,
     progressStats,
-    setIsCertificateModalOpen,
+    openCertificateModal,
   } = useApp();
 
   const [categoryTab, setCategoryTab] = useState(CATEGORIES.ALL);
@@ -67,7 +68,7 @@ export default function ArchiveView() {
             placeName: p.displayName || p.name,
             category: p.category,
             visitedDate: '2026-10-23',
-            userRating: 5,
+            googleRating: p.rating || 4.8,
             journalNote: `[Simulasi Demo Juri] Kunjungan eksplorasi literasi di ${
               p.displayName || p.name
             }, ${p.district || 'Yogyakarta'}. Suasana sangat kondusif, edukatif, dan menginspirasi!`,
@@ -110,11 +111,15 @@ export default function ArchiveView() {
               {progressStats.isEligibleForCertificate && (
                 <button
                   type="button"
-                  onClick={() => setIsCertificateModalOpen(true)}
+                  onClick={() =>
+                    openCertificateModal(
+                      categoryTab !== CATEGORIES.ALL ? categoryTab : null
+                    )
+                  }
                   className="h-10 px-4 rounded-xl bg-[#FFE699] text-[#5C4033] font-bold text-xs md:text-sm border-2 border-[#5C4033] shadow-[0_3px_0_#5C4033] active:translate-y-0.5 active:shadow-none transition-all inline-flex items-center gap-2"
                 >
                   <Award className="w-4 h-4 text-[#5C4033]" strokeWidth={2} />
-                  <span>Cetak Sertifikat</span>
+                  <span>Cetak Sertifikat Kategori</span>
                 </button>
               )}
 
@@ -202,7 +207,11 @@ export default function ArchiveView() {
                   CATEGORY_CONFIG[entry.category] || CATEGORY_CONFIG.museum;
                 const thumbnailPhoto =
                   placeObj?.photos?.[0] ||
-                  'https://images.unsplash.com/photo-1507842229356-51c61504d3ab?auto=format&fit=crop&w=800&q=80';
+                  YOGYAKARTA_REAL_FALLBACK_PHOTOS[entry.category]?.[0] ||
+                  YOGYAKARTA_REAL_FALLBACK_PHOTOS.museum[0];
+                const gmapsRating = Number(
+                  placeObj?.rating || entry.googleRating || 4.8
+                ).toFixed(1);
 
                 return (
                   <article
@@ -227,13 +236,16 @@ export default function ArchiveView() {
                           {catInfo.label}
                         </span>
 
-                        {/* Rating Pribadi Pengguna (★) */}
-                        <span className="absolute top-2.5 right-2.5 px-2.5 py-0.5 rounded-full bg-[#FFE699] border-[1.5px] border-[#5C4033] text-[12px] font-bold text-[#5C4033] shadow-[0_2px_0_#5C4033] flex items-center gap-1">
+                        {/* Rating Lokasi dari Google Maps (★) */}
+                        <span
+                          title="Rating dari Google Maps"
+                          className="absolute top-2.5 right-2.5 px-2.5 py-0.5 rounded-full bg-[#FFE699] border-[1.5px] border-[#5C4033] text-[12px] font-bold text-[#5C4033] shadow-[0_2px_0_#5C4033] flex items-center gap-1"
+                        >
                           <Star
                             className="w-3 h-3 fill-[#5C4033] text-[#5C4033]"
                             strokeWidth={2}
                           />
-                          <span>{entry.userRating || 5}.0</span>
+                          <span>{gmapsRating} G-Maps</span>
                         </span>
                       </div>
 

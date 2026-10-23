@@ -25,6 +25,7 @@ import {
   query,
   where,
 } from 'firebase/firestore';
+import { YOGYAKARTA_PLACES } from './yogyakartaPlaces';
 
 // Live Firebase Cloud Firestore Configuration (test-b9d99)
 const firebaseConfig = {
@@ -414,6 +415,29 @@ export async function saveAdminConfig({ googleMapsApiKey }) {
 
 // ==================== 3. ADMIN LOCATIONS CRUD (places/{placeId} in Cloud Firestore) ====================
 
+function sanitizePlacePhotos(data) {
+  const rawPhotos = Array.isArray(data?.photos) ? data.photos : [];
+  const hasOldTemplate = rawPhotos.some(
+    (u) => typeof u === 'string' && u.includes('images.unsplash.com')
+  );
+  if (!hasOldTemplate && rawPhotos.length > 0) {
+    return rawPhotos.slice(0, 5);
+  }
+  const matched = YOGYAKARTA_PLACES.find(
+    (p) =>
+      p.placeId === data?.placeId ||
+      p.id === data?.id ||
+      p.displayName?.toLowerCase() === data?.displayName?.toLowerCase()
+  );
+  if (matched && Array.isArray(matched.photos) && matched.photos.length > 0) {
+    return matched.photos.slice(0, 5);
+  }
+  const catFallback = YOGYAKARTA_PLACES.find(
+    (p) => p.category === (data?.category || 'museum')
+  );
+  return (catFallback?.photos || []).slice(0, 5);
+}
+
 /**
  * Fetch all locations inputted by Admin from Cloud Firestore `places` collection
  */
@@ -429,7 +453,7 @@ export async function fetchAdminPlaces() {
             ...data,
             id: data.placeId || docSnap.id,
             placeId: data.placeId || docSnap.id,
-            photos: (data.photos || []).slice(0, 5),
+            photos: sanitizePlacePhotos(data),
           });
         }
       });
@@ -448,7 +472,11 @@ export async function fetchAdminPlaces() {
 
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.PLACES);
-    return raw ? JSON.parse(raw) : [];
+    const parsed = raw ? JSON.parse(raw) : [];
+    return parsed.map((item) => ({
+      ...item,
+      photos: sanitizePlacePhotos(item),
+    }));
   } catch {
     return [];
   }
@@ -632,7 +660,7 @@ export async function upsertArchiveJournal(userId, journalPayload) {
     category: journalPayload.category,
     visitedDate:
       journalPayload.visitedDate || new Date().toISOString().split('T')[0],
-    userRating: Number(journalPayload.userRating) || 5,
+    googleRating: Number(journalPayload.googleRating) || 4.8,
     journalNote: (journalPayload.journalNote || '').trim(),
     updatedAt: new Date().toISOString(),
   };

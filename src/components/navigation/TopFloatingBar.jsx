@@ -55,6 +55,8 @@ export default function TopFloatingBar() {
     CATEGORY_OPTIONS.find((opt) => opt.id === activeCategory) || CATEGORY_OPTIONS[0];
 
   const usernameDisplay = user.username || 'Nadia';
+  const isAdmin =
+    user?.role === 'admin' || user?.username?.toLowerCase() === 'admin';
 
   return (
     <>
@@ -149,17 +151,19 @@ export default function TopFloatingBar() {
             )}
           </div>
 
-          {/* Admin Menu Button (Set Lokasi & API Google Maps) */}
-          <button
-            type="button"
-            onClick={() => setIsAdminModalOpen(true)}
-            title="Admin Menu: Input Lokasi via Google Maps API & Konfigurasi"
-            aria-label="Buka Admin Menu"
-            className="h-10 px-3 rounded-xl bg-[#FFE699] hover:brightness-105 border-2 border-[#5C4033] text-[#5C4033] text-xs font-bold flex items-center gap-1.5 shadow-[0_2px_0_#5C4033] active:translate-y-0.5 active:shadow-none transition-all"
-          >
-            <Shield className="w-4 h-4 text-[#5C4033] shrink-0" strokeWidth={2} />
-            <span className="hidden md:inline">Admin</span>
-          </button>
+          {/* Admin Menu Button — HANYA MUNCUL JIKA LOGIN SEBAGAI ADMIN */}
+          {isAdmin && (
+            <button
+              type="button"
+              onClick={() => setIsAdminModalOpen(true)}
+              title="Admin Menu: Input Lokasi via Google Maps API & Konfigurasi"
+              aria-label="Buka Admin Menu"
+              className="h-10 px-3 rounded-xl bg-[#FFE699] hover:brightness-105 border-2 border-[#5C4033] text-[#5C4033] text-xs font-bold flex items-center gap-1.5 shadow-[0_2px_0_#5C4033] active:translate-y-0.5 active:shadow-none transition-all"
+            >
+              <Shield className="w-4 h-4 text-[#5C4033] shrink-0" strokeWidth={2} />
+              <span className="hidden md:inline">Admin</span>
+            </button>
+          )}
 
           {/* Reset Peta Jogja Button */}
           <button
@@ -198,14 +202,20 @@ export default function TopFloatingBar() {
             Seluruh titik lokasi di peta Yogyakarta wajib diinput oleh Admin. Admin dapat mencari
             nama tempat dan Google Maps API akan otomatis mencari lokasi beserta koordinatnya.
           </p>
-          <button
-            type="button"
-            onClick={() => setIsAdminModalOpen(true)}
-            className="mt-3.5 w-full h-11 px-4 rounded-xl bg-[#FFB7C5] text-[#5C4033] font-bold text-xs border-2 border-[#5C4033] shadow-[0_3px_0_#5C4033] active:translate-y-0.5 transition-all flex items-center justify-center gap-2"
-          >
-            <PlusCircle className="w-4 h-4 text-[#5C4033]" strokeWidth={2} />
-            <span>Buka Admin Menu & Cari Lokasi via Google Maps</span>
-          </button>
+          {isAdmin ? (
+            <button
+              type="button"
+              onClick={() => setIsAdminModalOpen(true)}
+              className="mt-3.5 w-full h-11 px-4 rounded-xl bg-[#FFB7C5] text-[#5C4033] font-bold text-xs border-2 border-[#5C4033] shadow-[0_3px_0_#5C4033] active:translate-y-0.5 transition-all flex items-center justify-center gap-2"
+            >
+              <PlusCircle className="w-4 h-4 text-[#5C4033]" strokeWidth={2} />
+              <span>Buka Admin Menu & Cari Lokasi via Google Maps</span>
+            </button>
+          ) : (
+            <p className="mt-2.5 text-[11px] font-semibold text-[#5C4033]">
+              Silakan masuk menggunakan akun Admin pada halaman Login untuk menambahkan lokasi.
+            </p>
+          )}
         </div>
       )}
     </>

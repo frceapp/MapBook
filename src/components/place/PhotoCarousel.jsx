@@ -94,6 +94,11 @@ export default function PhotoCarousel({ photos = [], placeName = 'Lokasi Yogyaka
         })}
       </div>
 
+      {/* Top-Left Google Maps Photo Source Badge */}
+      <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-[#FFFDF9]/90 border border-[#5C4033] text-[11px] font-bold text-[#5C4033]">
+        Foto Google Maps
+      </div>
+
       {/* Top-Right Counter Badge */}
       <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-[#FFFDF9]/90 border border-[#5C4033] text-[11px] font-bold text-[#5C4033]">
         {activeIndex + 1} / {topFivePhotos.length} Foto

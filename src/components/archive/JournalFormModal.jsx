@@ -6,12 +6,13 @@ import { CATEGORY_CONFIG } from '../../services/yogyakartaPlaces';
 
 /**
  * Sub-Modal / Form Input Jurnal (Add / Edit Journal)
- * Strictly follows AGENTS.md Section 3 & Section 4 (PAGE 3):
- * - Input tanggal kunjungan, rating bintang pribadi (1-5), dan cerita jurnal
+ * - Input tanggal kunjungan dan cerita jurnal (tanpa input rating manual dari pengguna)
+ * - Rating murni diambil langsung dari Google Maps (`currentPlace.rating`)
  * - Disimpan ke koleksi users/{userId}/archives/{placeId}
  */
 export default function JournalFormModal() {
   const {
+    user,
     isJournalModalOpen,
     setIsJournalModalOpen,
     journalTargetPlaceId,
@@ -25,11 +26,12 @@ export default function JournalFormModal() {
   const [visitedDate, setVisitedDate] = useState(
     () => new Date().toISOString().split('T')[0]
   );
-  const [userRating, setUserRating] = useState(5);
-  const [hoverRating, setHoverRating] = useState(0);
   const [journalNote, setJournalNote] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [saving, setSaving] = useState(false);
+
+  const isAdmin =
+    user?.role === 'admin' || user?.username?.toLowerCase() === 'admin';
 
   useEffect(() => {
     if (!isJournalModalOpen) return;
@@ -39,26 +41,21 @@ export default function JournalFormModal() {
     const existing = getJournalForPlace(initialId);
     if (existing) {
       setVisitedDate(existing.visitedDate || new Date().toISOString().split('T')[0]);
-      setUserRating(existing.userRating || 5);
       setJournalNote(existing.journalNote || '');
     } else {
       setVisitedDate(new Date().toISOString().split('T')[0]);
-      setUserRating(5);
       setJournalNote('');
     }
     setErrorMsg('');
   }, [isJournalModalOpen, journalTargetPlaceId, places, getJournalForPlace]);
 
-  // When user changes the dropdown place inside the modal, sync existing journal if any
   const handlePlaceChange = (newPlaceId) => {
     setSelectedPlaceId(newPlaceId);
     const existing = getJournalForPlace(newPlaceId);
     if (existing) {
       setVisitedDate(existing.visitedDate || new Date().toISOString().split('T')[0]);
-      setUserRating(existing.userRating || 5);
       setJournalNote(existing.journalNote || '');
     } else {
-      setUserRating(5);
       setJournalNote('');
     }
   };
@@ -89,7 +86,7 @@ export default function JournalFormModal() {
         placeName: currentPlace.displayName || currentPlace.name,
         category: currentPlace.category,
         visitedDate,
-        userRating: Number(userRating),
+        googleRating: Number(currentPlace.rating || 4.8),
         journalNote: journalNote.trim(),
       });
     } finally {
@@ -165,21 +162,24 @@ export default function JournalFormModal() {
                   {catInfo.label}
                 </span>
               </label>
+
               {places.length === 0 ? (
                 <div className="p-3 rounded-2xl bg-[#F5EFE6] border-[1.5px] border-[#5C4033] flex items-center justify-between gap-2">
                   <span className="text-xs font-medium text-[#8C7365]">
                     Belum ada lokasi yang diinput Admin.
                   </span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsJournalModalOpen(false);
-                      setIsAdminModalOpen(true);
-                    }}
-                    className="h-9 px-3 rounded-xl bg-[#FFE699] text-[#5C4033] text-xs font-bold border border-[#5C4033]"
-                  >
-                    Input di Admin
-                  </button>
+                  {isAdmin && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsJournalModalOpen(false);
+                        setIsAdminModalOpen(true);
+                      }}
+                      className="h-9 px-3 rounded-xl bg-[#FFE699] text-[#5C4033] text-xs font-bold border border-[#5C4033]"
+                    >
+                      Input di Admin
+                    </button>
+                  )}
                 </div>
               ) : (
                 <select
@@ -197,6 +197,26 @@ export default function JournalFormModal() {
               )}
             </div>
 
+            {/* Info Rating dari Google Maps (Read-Only, Tidak Ada Input Rating User) */}
+            {currentPlace && (
+              <div className="p-3 rounded-2xl bg-[#F5EFE6] border-[1.5px] border-[#5C4033]/30 flex items-center justify-between gap-2">
+                <span className="text-xs font-semibold text-[#8C7365]">
+                  Rating Lokasi (Sumber Google Maps):
+                </span>
+                <span className="px-2.5 py-1 rounded-lg bg-[#FFE699] border border-[#5C4033] text-xs font-bold text-[#5C4033] inline-flex items-center gap-1">
+                  <Star
+                    className="w-3.5 h-3.5 fill-[#5C4033] text-[#5C4033]"
+                    strokeWidth={2}
+                  />
+                  <span>
+                    {Number(currentPlace.rating || 4.8).toFixed(1)} ★ (
+                    {(currentPlace.userRatingCount || 320).toLocaleString('id-ID')}{' '}
+                    ulasan)
+                  </span>
+                </span>
+              </div>
+            )}
+
             {/* Tanggal Kunjungan */}
             <div>
               <label
@@ -213,41 +233,6 @@ export default function JournalFormModal() {
                 onChange={(e) => setVisitedDate(e.target.value)}
                 className="w-full h-[46px] px-4 rounded-2xl bg-[#FFFDF9] text-[#5C4033] text-sm font-medium border-[1.5px] border-[#5C4033] focus:outline-none"
               />
-            </div>
-
-            {/* Rating Bintang Pribadi (1-5) */}
-            <div>
-              <span className="block text-xs font-semibold text-[#5C4033] mb-1.5">
-                Rating Pengalaman Pribadi (1 – 5 Bintang)
-              </span>
-              <div className="flex items-center justify-between p-3 rounded-2xl bg-[#F5EFE6] border-[1.5px] border-[#5C4033]">
-                <div className="flex items-center gap-1.5">
-                  {[1, 2, 3, 4, 5].map((starValue) => {
-                    const active = (hoverRating || userRating) >= starValue;
-                    return (
-                      <button
-                        key={starValue}
-                        type="button"
-                        onClick={() => setUserRating(starValue)}
-                        onMouseEnter={() => setHoverRating(starValue)}
-                        onMouseLeave={() => setHoverRating(0)}
-                        aria-label={`Beri rating ${starValue} bintang`}
-                        className="w-10 h-10 rounded-xl flex items-center justify-center transition-transform hover:scale-110 active:scale-95"
-                      >
-                        <Star
-                          className={`w-6 h-6 text-[#5C4033] ${
-                            active ? 'fill-[#FFE699]' : 'fill-[#FFFDF9]'
-                          }`}
-                          strokeWidth={2}
-                        />
-                      </button>
-                    );
-                  })}
-                </div>
-                <span className="px-2.5 py-1 rounded-lg bg-[#FFE699] border border-[#5C4033] text-xs font-bold text-[#5C4033]">
-                  {userRating} / 5 ★
-                </span>
-              </div>
             </div>
 
             {/* Cerita Jurnal */}

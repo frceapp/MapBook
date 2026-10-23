@@ -153,7 +153,7 @@ export default function PlaceDetailModal() {
 
               {/* 2. Baris Info Rating & Jam Buka */}
               <div className="flex flex-wrap items-center justify-between gap-2 mt-3 p-3 rounded-xl bg-[#F5EFE6] border border-[#5C4033]/20">
-                {/* Google Stars */}
+                {/* Google Stars (Rating Hanya Diambil dari Google Maps) */}
                 <div className="flex items-center gap-1.5">
                   <span className="w-6 h-6 rounded-lg bg-[#FFE699] border border-[#5C4033] flex items-center justify-center">
                     <Star
@@ -165,7 +165,7 @@ export default function PlaceDetailModal() {
                     {Number(selectedPlace.rating || 4.8).toFixed(1)} ★
                   </span>
                   <span className="text-[12px] font-medium text-[#8C7365]">
-                    ({(selectedPlace.userRatingCount || 320).toLocaleString('id-ID')} ulasan)
+                    ({(selectedPlace.userRatingCount || 320).toLocaleString('id-ID')} ulasan Google Maps)
                   </span>
                 </div>
 
@@ -230,7 +230,7 @@ export default function PlaceDetailModal() {
                       </span>
                       {existingJournal?.visitedDate && (
                         <span className="text-[12px] font-medium text-[#8C7365]">
-                          {existingJournal.visitedDate} • {existingJournal.userRating} ★
+                          Dikunjungi: {existingJournal.visitedDate}
                         </span>
                       )}
                     </div>

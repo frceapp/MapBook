@@ -36,6 +36,7 @@ const QUICK_SEARCH_EXAMPLES = [
 
 export default function AdminMenuModal() {
   const {
+    user,
     isAdminModalOpen,
     setIsAdminModalOpen,
     googleMapsApiKey,
@@ -64,7 +65,10 @@ export default function AdminMenuModal() {
   const [apiKeyInput, setApiKeyInput] = useState(googleMapsApiKey || '');
   const [savingKey, setSavingKey] = useState(false);
 
-  if (!isAdminModalOpen) return null;
+  const isAdmin =
+    user?.role === 'admin' || user?.username?.toLowerCase() === 'admin';
+
+  if (!isAdminModalOpen || !isAdmin) return null;
 
   const triggerSearch = async (queryOverride = null, categoryOverride = null) => {
     const q = (queryOverride ?? searchQuery).trim();

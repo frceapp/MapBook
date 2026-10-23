@@ -276,23 +276,12 @@ export default function LoginPageOverlay() {
               <span>Jelajahi sebagai Tamu</span>
             </button>
 
-            {/* Tombol Masuk Admin (Set Lokasi & API Google Maps) */}
-            <button
-              type="button"
-              onClick={onAdminQuickLogin}
-              disabled={authLoading}
-              className="w-full h-11 mt-2.5 rounded-xl bg-[#FFE699] text-[#5C4033] font-bold text-xs border-2 border-[#5C4033] shadow-[0_3px_0_#5C4033] hover:brightness-[1.02] active:translate-y-0.5 active:shadow-[0_1px_0_#5C4033] transition-all flex items-center justify-center gap-2 disabled:opacity-60"
-            >
-              <Shield className="w-4 h-4 text-[#5C4033]" strokeWidth={2} />
-              <span>Masuk Admin (Set Lokasi & Google Maps API)</span>
-            </button>
-
             <div className="mt-3 pt-2.5 border-t border-[#5C4033]/15 flex items-center justify-between text-[11px] text-[#8C7365]">
               <span className="inline-flex items-center gap-1 font-medium text-[#5C4033]">
                 <Database className="w-3.5 h-3.5 text-[#5C4033]" strokeWidth={2} />
                 {isFirebaseConfigured ? 'Cloud Firestore Terhubung' : 'Local Firestore Fallback'}
               </span>
-              <span>Admin: admin / admin123</span>
+              <span>1-Klik Akses Juri & Tamu</span>
             </div>
           </motion.div>
         </motion.div>

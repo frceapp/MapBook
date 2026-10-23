@@ -66,11 +66,11 @@ export const YOGYAKARTA_PLACES = [
     },
     facilities: ['Koleksi Keris & Wayang', 'Bioskop Sejarah', 'Pertunjukan Wayang Kulit', 'Area Interaktif'],
     photos: [
-      'https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1565034946487-077786996e27?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1518998053901-5348d3961a04?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1544531586-fde5298cdd40?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=900&q=80',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/24/Museum_Sonobudoyo_Yogyakarta_Unit_1.jpg/960px-Museum_Sonobudoyo_Yogyakarta_Unit_1.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/95/Pondok_Wayang_Museum_Sonobudoyo_Yogyakarta_Unit_1.jpg/960px-Pondok_Wayang_Museum_Sonobudoyo_Yogyakarta_Unit_1.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3d/Javanese_tembang_and_dance_fusion_performance%2C_Sonobudoyo_Museum%2C_Yogyakarta%2C_2017-12-05_03.jpg/960px-Javanese_tembang_and_dance_fusion_performance%2C_Sonobudoyo_Museum%2C_Yogyakarta%2C_2017-12-05_03.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/93/Javanese_tembang_and_dance_fusion_performance%2C_Sonobudoyo_Museum%2C_Yogyakarta%2C_2017-12-05_06.jpg/960px-Javanese_tembang_and_dance_fusion_performance%2C_Sonobudoyo_Museum%2C_Yogyakarta%2C_2017-12-05_06.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/8/81/Javanese_tembang_and_dance_fusion_performance%2C_Sonobudoyo_Museum%2C_Yogyakarta%2C_2017-12-05_08.jpg/960px-Javanese_tembang_and_dance_fusion_performance%2C_Sonobudoyo_Museum%2C_Yogyakarta%2C_2017-12-05_08.jpg',
     ],
     description:
       'Museum kebudayaan Jawa terlengkap di jantung Titik Nol Kilometer Yogyakarta. Menyimpan ribuan koleksi topeng klasik, wayang kulit, senjata tradisional keris, naskah kuno, serta ruang pameran baru yang sangat estetik dan imersif.',
@@ -97,11 +97,11 @@ export const YOGYAKARTA_PLACES = [
     },
     facilities: ['Tur Edukasi Berpemandu', 'Arsitektur Taman Asri', 'Koleksi Batik Vorstenlanden', 'Kafe Beukenhof'],
     photos: [
-      'https://images.unsplash.com/photo-1544531586-fde5298cdd40?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1565034946487-077786996e27?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?auto=format&fit=crop&w=900&q=80',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3e/Museum_Ullen_Sentalu_Yogyakarta.jpg/960px-Museum_Ullen_Sentalu_Yogyakarta.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e5/Museum_Ullen_Sentalu_Spot_Foto.jpg/960px-Museum_Ullen_Sentalu_Spot_Foto.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6e/Papan_penanda_di_area_Museum_Ullen_Sentalu%2C_Kaliurang.jpg/960px-Papan_penanda_di_area_Museum_Ullen_Sentalu%2C_Kaliurang.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f7/Ullen_Sentalu_%281%29.jpg/960px-Ullen_Sentalu_%281%29.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/70/Statue_at_Ullen_Sentalu.jpg/960px-Statue_at_Ullen_Sentalu.jpg',
     ],
     description:
       'Museum seni dan budaya bangsawan Dinasti Mataram (Kasunanan Surakarta, Kasultanan Yogyakarta, Praja Mangkunegaran, dan Kadipaten Pakualaman) yang berpadu harmonis dengan hutan pinus sejuk di lereng Gunung Merapi.',
@@ -129,11 +129,11 @@ export const YOGYAKARTA_PLACES = [
     },
     facilities: ['Diorama Sejarah Kemerdekaan', 'Perpustakaan Sejarah', 'Taman Air Mancur Malam', 'Akses Ramah Difabel'],
     photos: [
-      'https://images.unsplash.com/photo-1518998053901-5348d3961a04?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1565034946487-077786996e27?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1508997449629-303059a039c0?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1544531586-fde5298cdd40?auto=format&fit=crop&w=900&q=80',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8f/Fort_Vredeburg%2C_Yogyakarta%2C_Indonesia.JPG/960px-Fort_Vredeburg%2C_Yogyakarta%2C_Indonesia.JPG',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0a/KITLV_53180_-_Kassian_C%C3%A9phas_-_Street_behind_Fort_Vredeburg_in_Yogyakarta_-_Around_1890.tif/lossy-page1-960px-KITLV_53180_-_Kassian_C%C3%A9phas_-_Street_behind_Fort_Vredeburg_in_Yogyakarta_-_Around_1890.tif.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8e/Fort_Vredeburg_Museum_%28inside%29%2C_Yogyakarta.jpg/960px-Fort_Vredeburg_Museum_%28inside%29%2C_Yogyakarta.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/64/Kunjungan_Wiki_Mrebawani_II_ke_Museum_Benteng_Vredeburg_%2801%29.jpg/960px-Kunjungan_Wiki_Mrebawani_II_ke_Museum_Benteng_Vredeburg_%2801%29.jpg',
+      'https://upload.wikimedia.org/wikipedia/commons/b/bc/Museum_Benteng_Vredeburg_02.jpg',
     ],
     description:
       'Benteng kolonial bersejarah abad ke-18 di ujung selatan kawasan Malioboro yang kini menjadi museum perjuangan nasional dengan diorama interaktif, instalasi proyeksi digital, dan ruang literasi sejarah Indonesia.',
@@ -159,11 +159,11 @@ export const YOGYAKARTA_PLACES = [
     },
     facilities: ['4 Galeri Lukisan Maestro', 'Kelas Melukis', 'Kafe Loteng Daun Pisang', 'Arsip Seni Rupa'],
     photos: [
-      'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1536924940846-227afb31e2a5?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1501472312651-726efe119ff1?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1577083552431-6e5fd01aa342?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1545989253-02cc26577f88?auto=format&fit=crop&w=900&q=80',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9c/Affandi_Museum_Sketch.jpg/960px-Affandi_Museum_Sketch.jpg',
+      'https://upload.wikimedia.org/wikipedia/commons/b/bd/Patung_Affandi_dan_Kartika_Karya_Affandi_Koleksi_Museum_Affandi_Yogyakarta.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ec/Affandi_Museum_Exhibition_Room.jpg/960px-Affandi_Museum_Exhibition_Room.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/de/The_Western_Roof_of_Affandi_Musuem.jpg/960px-The_Western_Roof_of_Affandi_Musuem.jpg',
+      'https://upload.wikimedia.org/wikipedia/commons/a/a0/Plakat_Peresmian_Gedung_Museum_Affandi_Tahun_1988_Koleksi_Museum_Affandi_Yogyakarta.jpg',
     ],
     description:
       'Kediaman sekaligus galeri sang maestro lukis ekspresionis Indonesia, Affandi, di tepi Sungai Gajah Wong. Bangunan beratap pelepah daun pisang yang ikonik ini menyimpan ratusan lukisan asli dan artefak perjalanan hidup beliau.',
@@ -190,11 +190,11 @@ export const YOGYAKARTA_PLACES = [
     },
     facilities: ['Pentas Gamelan & Tari Klasik', 'Museum Lukisan & Kristal', 'Naskah Babad Keraton', 'Abdi Dalem Guide'],
     photos: [
-      'https://images.unsplash.com/photo-1565034946487-077786996e27?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1544531586-fde5298cdd40?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1518998053901-5348d3961a04?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1508997449629-303059a039c0?auto=format&fit=crop&w=900&q=80',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9e/Yogyakarta_Indonesia_Kraton-the-Sultans-Palace-02.jpg/960px-Yogyakarta_Indonesia_Kraton-the-Sultans-Palace-02.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9d/Kraton_Ngayogyakarta_Hadiningrat_%2849797461187%29.jpg/960px-Kraton_Ngayogyakarta_Hadiningrat_%2849797461187%29.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/3/38/Kraton_Ngayogyakarta_Hadiningrat%2C_Yogyakarta%2C_Indonesia%2C_20220818_0946_8882.jpg/960px-Kraton_Ngayogyakarta_Hadiningrat%2C_Yogyakarta%2C_Indonesia%2C_20220818_0946_8882.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/79/Kraton_Ngayogyakarta_Hadiningrat%2C_Yogyakarta%2C_Indonesia%2C_20220818_0950_8884.jpg/960px-Kraton_Ngayogyakarta_Hadiningrat%2C_Yogyakarta%2C_Indonesia%2C_20220818_0950_8884.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/5/56/Kraton_Ngayogyakarta_Hadiningrat%2C_Yogyakarta%2C_Indonesia%2C_20220818_0943_8872.jpg/960px-Kraton_Ngayogyakarta_Hadiningrat%2C_Yogyakarta%2C_Indonesia%2C_20220818_0943_8872.jpg',
     ],
     description:
       'Pusat kebudayaan hidup Kasultanan Ngayogyakarta Hadiningrat. Pengunjung dapat mengagumi arsitektur filosofis Jawa, koleksi manuskrip serat kuno, pusaka kerajaan, serta menikmati pementasan seni karawitan dan tari klasik setiap pagi.',
@@ -221,11 +221,11 @@ export const YOGYAKARTA_PLACES = [
     },
     facilities: ['Teater Mini Erupsi', 'Alat Simulasi Gempa', 'Koleksi Batuan Vulkanik', 'Spot Foto Merapi'],
     photos: [
-      'https://images.unsplash.com/photo-1508997449629-303059a039c0?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1518998053901-5348d3961a04?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1565034946487-077786996e27?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1544531586-fde5298cdd40?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?auto=format&fit=crop&w=900&q=80',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fb/Taman_Pintar_Yogyakarta.jpg/960px-Taman_Pintar_Yogyakarta.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d2/Taman_pintar_-_panoramio.jpg/960px-Taman_pintar_-_panoramio.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d0/Yogyakarta_planetarium.jpg/960px-Yogyakarta_planetarium.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bd/Front_gate_of_Taman_Pintar.jpg/960px-Front_gate_of_Taman_Pintar.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3e/Gondomanan_Temple.jpg/960px-Gondomanan_Temple.jpg',
     ],
     description:
       'Wahana edukasi geologi dan vulkanologi di kaki Gunung Merapi. Menyajikan informasi ilmiah mengenai aktivitas vulkanik, mitigasi bencana, artefak sisa erupsi 2010, dan filosofi kosmologi Gunung Merapi – Keraton – Laut Selatan.',
@@ -251,11 +251,11 @@ export const YOGYAKARTA_PLACES = [
     },
     facilities: ['Mesin Sandi Klasik', 'Game Pemecah Kriptografi', 'Bangunan Cagar Budaya', 'Gratis Tiket Masuk'],
     photos: [
-      'https://images.unsplash.com/photo-1544531586-fde5298cdd40?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1518998053901-5348d3961a04?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1565034946487-077786996e27?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1508997449629-303059a039c0?auto=format&fit=crop&w=900&q=80',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4a/Monumen_Yogya_Kembali.JPG/960px-Monumen_Yogya_Kembali.JPG',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fe/76_mm_mountain_gun_M48_at_Monumen_Jogja_Kembali_1.jpg/960px-76_mm_mountain_gun_M48_at_Monumen_Jogja_Kembali_1.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e7/Cart_used_by_Student_Army%2C_Monumen_Jogja_Kembali.jpg/960px-Cart_used_by_Student_Army%2C_Monumen_Jogja_Kembali.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/07/Bambu_runcing%2C_Monumen_Jogja_Kembali.jpg/960px-Bambu_runcing%2C_Monumen_Jogja_Kembali.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/da/Litter_used_by_Sudirman%2C_Monumen_Jogja_Kembali.jpg/960px-Litter_used_by_Sudirman%2C_Monumen_Jogja_Kembali.jpg',
     ],
     description:
       'Satu-satunya museum kriptografi dan persandian di Indonesia yang terletak di kawasan heritage Kotabaru. Mengajak pengunjung memecahkan kode rahasia perjuangan diplomasi kemerdekaan RI menggunakan mesin sandi bersejarah.',
@@ -282,11 +282,11 @@ export const YOGYAKARTA_PLACES = [
     },
     facilities: ['Ruang Hening Garbha Graha', '10 Diorama Lingkar', 'Perpustakaan Perjuangan', 'Taman Pelangi'],
     photos: [
-      'https://images.unsplash.com/photo-1518998053901-5348d3961a04?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1508997449629-303059a039c0?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1565034946487-077786996e27?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1544531586-fde5298cdd40?auto=format&fit=crop&w=900&q=80',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f0/Museum_Gunungapi_Merapi.jpg/960px-Museum_Gunungapi_Merapi.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4d/Museum_Gunungapi_Merapi_%282%29.jpg/960px-Museum_Gunungapi_Merapi_%282%29.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f8/Museum_Gunungapi_Merapi_%281%29.jpg/960px-Museum_Gunungapi_Merapi_%281%29.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f1/Morfologi_Puncak_Gunungapi_Merapi.jpg/960px-Morfologi_Puncak_Gunungapi_Merapi.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/3/33/Museum_Gunungapi_Merapi.png/960px-Museum_Gunungapi_Merapi.png',
     ],
     description:
       'Museum berbentuk kerucut gunung yang berada tepat di sumbu imajiner Yogyakarta. Mengabadikan peristiwa ditariknya tentara pendudukan Belanda dari ibu kota RI di Yogyakarta pada 29 Juni 1949.',
@@ -312,11 +312,11 @@ export const YOGYAKARTA_PLACES = [
     },
     facilities: ['Teknologi Augmented Reality', 'Teater 3D Purba', 'Diorama Kerajaan Jawa', 'Spot Foto Tematik'],
     photos: [
-      'https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1544531586-fde5298cdd40?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1565034946487-077786996e27?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1518998053901-5348d3961a04?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=900&q=80',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/05/An_Indonesian_Air_Force_A-4-Skyhawk_TT-0440_at_Dirgantara_Mandala_Museum.jpg/960px-An_Indonesian_Air_Force_A-4-Skyhawk_TT-0440_at_Dirgantara_Mandala_Museum.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/02/Bae_Hawk_Indonesian_Air_Force_at_Dirgantara_Mandala_Museum.jpg/960px-Bae_Hawk_Indonesian_Air_Force_at_Dirgantara_Mandala_Museum.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/79/Dirgantara_Mandala_Museum_63.jpg/960px-Dirgantara_Mandala_Museum_63.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/60/Dirgantara_Mandala_Museum_64.jpg/960px-Dirgantara_Mandala_Museum_64.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8f/Dirgantara_Mandala_Museum_92.jpg/960px-Dirgantara_Mandala_Museum_92.jpg',
     ],
     description:
       'Museum sejarah tanah Jawa berbasis teknologi Augmented Reality (AR) dan visualisasi sinematik. Mengajak pengunjung menelusuri peradaban manusia purba, era Mataram Kuno, Majapahit, hingga penyebaran Wali Songo.',
@@ -343,11 +343,7 @@ export const YOGYAKARTA_PLACES = [
     },
     facilities: ['Naskah Asli Ki Hadjar Dewantara', 'Perpustakaan Tamansiswa', 'Pendopo Agung', 'Tur Literasi Pendidikan'],
     photos: [
-      'https://images.unsplash.com/photo-1565034946487-077786996e27?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1544531586-fde5298cdd40?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1518998053901-5348d3961a04?auto=format&fit=crop&w=900&q=80',
+
     ],
     description:
       'Rumah kediaman Bapak Pendidikan Nasional, Ki Hadjar Dewantara, di kompleks Perguruan Tamansiswa Yogyakarta. Menyimpan meja kerja, mesin ketik, surat-surat perjuangan, dan lebih dari 3.000 koleksi buku pustaka beliau.',
@@ -375,11 +371,7 @@ export const YOGYAKARTA_PLACES = [
     },
     facilities: ['Rak Buku Sastra & Desain', 'Specialty Pour-Over Coffee', 'Wi-Fi Cepat', 'Area Baca Indoor AC'],
     photos: [
-      'https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=900&q=80',
+
     ],
     description:
       'Book cafe legendaris dekat Tugu Jogja yang menggabungkan racikan kopi specialty kelas wahid dengan rak buku setinggi langit-langit. Koleksi bukunya mencakup novel dunia, esai filsafat, majalah desain, dan komik pilihan.',
@@ -405,11 +397,7 @@ export const YOGYAKARTA_PLACES = [
     },
     facilities: ['Perpustakaan & Toko Buku Indie', 'Kucing Lucu Ramah', 'Pojok Teh & Kopi', 'Taman Baca Asri'],
     photos: [
-      'https://images.unsplash.com/photo-1507842229356-51c61504d3ab?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=900&q=80',
+
     ],
     description:
       'Surga tersembunyi bagi pecinta literasi di Yogyakarta utara. Rumah hangat bernuansa vintage yang dipenuhi ribuan buku kurasi independen, piringan hitam, suguhan minuman hangat, dan kucing-kucing menggemaskan yang menemani membaca.',
@@ -435,11 +423,7 @@ export const YOGYAKARTA_PLACES = [
     },
     facilities: ['Koleksi Sastra Nusantara', 'Kopi Susu Gula Aren', 'Stopkontak di Tiap Meja', 'Diskusi Buku Mingguan'],
     photos: [
-      'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1507842229356-51c61504d3ab?auto=format&fit=crop&w=900&q=80',
+
     ],
     description:
       'Kedai buku dan kopi mungil yang super cozy di kampung turis Prawirotaman. Menghadirkan suasana tenang dengan alunan musik akustik pelan, aroma seduhan biji kopi nusantara, dan rak penuh novel sastra Indonesia.',
@@ -466,11 +450,7 @@ export const YOGYAKARTA_PLACES = [
     },
     facilities: ['Galeri Seni & Ruang Baca', 'Menu Organik Lokal', 'Toko Zine & Buku Seni', 'Balkon Taman Rindang'],
     photos: [
-      'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1507842229356-51c61504d3ab?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=80',
+
     ],
     description:
       'Ruang alternatif seni, literasi, dan kuliner legendaris di selatan Yogyakarta. Menggabungkan restoran taman yang teduh, toko buku independen, zine seni rupa, serta ruang baca tempat seniman dan penulis Jogja berkumpul.',
@@ -496,11 +476,7 @@ export const YOGYAKARTA_PLACES = [
     },
     facilities: ['Perpustakaan Mini Komunitas', 'Wi-Fi Kencang', 'Roastery Sendiri', 'Ruang Diskusi Literasi'],
     photos: [
-      'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=900&q=80',
+
     ],
     description:
       'Kedai kopi pelopor gerakan literasi kopi di Sleman dengan slogannya "Setiap Kopi Punya Cerita". Menyediakan ratusan koleksi buku bacaan sejarah, sosial, dan fiksi yang bebas dibaca sembari menikmati manual brew.',
@@ -527,11 +503,7 @@ export const YOGYAKARTA_PLACES = [
     },
     facilities: ['Koleksi Buku Langka & Lawas', 'Artisanal Tea & Coffee', 'Halaman Rumput Teduh', 'Pameran Ilustrasi'],
     photos: [
-      'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1507842229356-51c61504d3ab?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=900&q=80',
+
     ],
     description:
       'Kafe dan toko buku independen berkonsep taman rumah Jawa yang hangat. Menyimpan koleksi buku-buku sastra klasik, terbitan lama yang langka, buku anak bergambar, serta teh bunga telang dan kue rumahan.',
@@ -558,11 +530,7 @@ export const YOGYAKARTA_PLACES = [
     },
     facilities: ['Storytelling Biji Kopi Nusantara', 'Teras Bambu Asri', 'Koleksi Majalah & Buku Alam', 'Suasana Tenang Tanpa Gadget'],
     photos: [
-      'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=900&q=80',
+
     ],
     description:
       'Kedai kopi ikonik di Yogyakarta yang mengedepankan budaya bercerita (storytelling) dan membaca di teras bambu yang rimbun. Tempat terbaik menikmati pagi sambil tenggelam dalam halaman buku favorit dan kopi single origin.',
@@ -588,11 +556,7 @@ export const YOGYAKARTA_PLACES = [
     },
     facilities: ['Interior Pastel Estetik', 'Sudut Baca Nyaman', 'Wi-Fi Cepat', 'Pastry & Artisan Tea'],
     photos: [
-      'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1507842229356-51c61504d3ab?auto=format&fit=crop&w=900&q=80',
+
     ],
     description:
       'Kafe berdesain bohem-pastel yang cerah dan sangat nyaman untuk membaca buku maupun menulis jurnal perjalanan di kawasan rindang Kotabaru. Dilengkapi pencahayaan alami yang ramah mata.',
@@ -618,11 +582,7 @@ export const YOGYAKARTA_PLACES = [
     },
     facilities: ['Pemandangan Kereta Api & Malioboro', 'Rak Buku Perjalanan', 'Buka Sejak Pagi', 'Kuliner Tradisional'],
     photos: [
-      'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=900&q=80',
+
     ],
     description:
       'Tempat singgah favorit para pelancong literasi tepat di pintu masuk Malioboro dan Stasiun Tugu Yogyakarta. Menawarkan sensasi menyeruput kopi hangat sambil menulis jurnal perjalanan dan melihat lalu-lalang kereta api.',
@@ -648,11 +608,7 @@ export const YOGYAKARTA_PLACES = [
     },
     facilities: ['Arsitektur Joglo Heritage', 'Buku Sejarah Mataram', 'Teh Nasgitel & Jajanan Pasar', 'Area Baca Pendopo'],
     photos: [
-      'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1507842229356-51c61504d3ab?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=900&q=80',
+
     ],
     description:
       'Tersembunyi di gang bersejarah ibu kota lama Mataram Islam di Kotagede, kafe buku berarsitektur rumah Kalang ini menyajikan teh poci gula batu dan ratusan literatur sejarah arsitektur serta kerajinan perak.',
@@ -681,11 +637,7 @@ export const YOGYAKARTA_PLACES = [
     },
     facilities: ['Ratusan Ribu Koleksi Buku', 'Bioskop 6D & Ruang Anak', 'Ruang Koleksi Langka Jogja', 'Wi-Fi & Co-Working Gratis'],
     photos: [
-      'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1507842229356-51c61504d3ab?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=900&q=80',
+
     ],
     description:
       'Perpustakaan termegah dan terbesar di Daerah Istimewa Yogyakarta. Memiliki desain bangunan ikonik dengan empat menara pensil, ruang baca berkapasitas ribuan pengunjung, koleksi braille, ruang dongeng anak, dan gazebo taman.',
@@ -712,11 +664,7 @@ export const YOGYAKARTA_PLACES = [
     },
     facilities: ['Gazebo Baca di Bawah Pohon', 'Ruang Diskusi Komunitas', 'E-Library & Komputer Gratis', 'Buka Hingga Malam'],
     photos: [
-      'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1507842229356-51c61504d3ab?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=900&q=80',
+
     ],
     description:
       'Berada di boulevard hijau Jalan Suroto Kotabaru, Perpustakaan Kota Yogyakarta memadukan gedung cagar budaya Indische dengan area baca semi-outdoor yang sangat teduh bagi pelajar, mahasiswa, dan warga Jogja.',
@@ -744,11 +692,7 @@ export const YOGYAKARTA_PLACES = [
     },
     facilities: ['Koleksi Riset & Jurnal Dunia', 'Windows of the World Corner', 'Ruang Baca Hening Modern', 'Arsitektur Kampus Hijau'],
     photos: [
-      'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1507842229356-51c61504d3ab?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=900&q=80',
+
     ],
     description:
       'Jantung literasi akademik di kampus kerakyatan Universitas Gadjah Mada. Menyediakan ratusan ribu literatur ilmiah, koleksi naskah Nusantara, pojok kebudayaan internasional, dan ruang kolaborasi berfasilitas modern.',
@@ -776,11 +720,7 @@ export const YOGYAKARTA_PLACES = [
     },
     facilities: ['Lebih dari 250.000 Buku Humaniora', 'Koleksi Filsafat & Sejarah Jawa', 'Suasana Sangat Hening', 'Taman Tengah Rindang'],
     photos: [
-      'https://images.unsplash.com/photo-1507842229356-51c61504d3ab?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=900&q=80',
+
     ],
     description:
       'Salah satu perpustakaan filsafat, sejarah, sastra, dan budaya Jawa terbaik di Asia Tenggara yang berdiri sejak tahun 1923. Terkenal dengan ketenangannya yang syahdu serta kelengkapan literatur langka yang terjaga rapi.',
@@ -807,11 +747,11 @@ export const YOGYAKARTA_PLACES = [
     },
     facilities: ['Arsip Koran & Majalah Tempo Dulu', 'Gedung Heritage 1940-an', 'Koleksi Sejarah Jogja', 'Lokasi Tepat di Malioboro'],
     photos: [
-      'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1507842229356-51c61504d3ab?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=900&q=80',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9e/Yogyakarta_Indonesia_Kraton-the-Sultans-Palace-02.jpg/960px-Yogyakarta_Indonesia_Kraton-the-Sultans-Palace-02.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9d/Kraton_Ngayogyakarta_Hadiningrat_%2849797461187%29.jpg/960px-Kraton_Ngayogyakarta_Hadiningrat_%2849797461187%29.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/3/38/Kraton_Ngayogyakarta_Hadiningrat%2C_Yogyakarta%2C_Indonesia%2C_20220818_0946_8882.jpg/960px-Kraton_Ngayogyakarta_Hadiningrat%2C_Yogyakarta%2C_Indonesia%2C_20220818_0946_8882.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/79/Kraton_Ngayogyakarta_Hadiningrat%2C_Yogyakarta%2C_Indonesia%2C_20220818_0950_8884.jpg/960px-Kraton_Ngayogyakarta_Hadiningrat%2C_Yogyakarta%2C_Indonesia%2C_20220818_0950_8884.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/5/56/Kraton_Ngayogyakarta_Hadiningrat%2C_Yogyakarta%2C_Indonesia%2C_20220818_0943_8872.jpg/960px-Kraton_Ngayogyakarta_Hadiningrat%2C_Yogyakarta%2C_Indonesia%2C_20220818_0943_8872.jpg',
     ],
     description:
       'Oasis ketenangan tepat di tengah hiruk-pikuk pedestrian Jalan Malioboro. Menempati gedung cagar budaya bersejarah, perpustakaan ini menyimpan koleksi surat kabar masa kolonial, majalah lawas, dan ensiklopedia budaya Yogyakarta.',
@@ -838,11 +778,11 @@ export const YOGYAKARTA_PLACES = [
     },
     facilities: ['4 Lantai Ruang Baca', 'Layanan Mandiri RFID', 'Corner Literasi Inklusif', 'Kafe Pustaka Lantai Dasar'],
     photos: [
-      'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1507842229356-51c61504d3ab?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=900&q=80',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9e/Yogyakarta_Indonesia_Kraton-the-Sultans-Palace-02.jpg/960px-Yogyakarta_Indonesia_Kraton-the-Sultans-Palace-02.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9d/Kraton_Ngayogyakarta_Hadiningrat_%2849797461187%29.jpg/960px-Kraton_Ngayogyakarta_Hadiningrat_%2849797461187%29.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/3/38/Kraton_Ngayogyakarta_Hadiningrat%2C_Yogyakarta%2C_Indonesia%2C_20220818_0946_8882.jpg/960px-Kraton_Ngayogyakarta_Hadiningrat%2C_Yogyakarta%2C_Indonesia%2C_20220818_0946_8882.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/79/Kraton_Ngayogyakarta_Hadiningrat%2C_Yogyakarta%2C_Indonesia%2C_20220818_0950_8884.jpg/960px-Kraton_Ngayogyakarta_Hadiningrat%2C_Yogyakarta%2C_Indonesia%2C_20220818_0950_8884.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/5/56/Kraton_Ngayogyakarta_Hadiningrat%2C_Yogyakarta%2C_Indonesia%2C_20220818_0943_8872.jpg/960px-Kraton_Ngayogyakarta_Hadiningrat%2C_Yogyakarta%2C_Indonesia%2C_20220818_0943_8872.jpg',
     ],
     description:
       'Perpustakaan perguruan tinggi berstandar internasional yang terkenal sangat ramah difabel dan memiliki sistem sirkulasi otomasi mandiri serta ribuan literatur keislaman, sains, dan kebudayaan Nusantara.',
@@ -869,11 +809,11 @@ export const YOGYAKARTA_PLACES = [
     },
     facilities: ['Ruang Baca Keluarga & Anak', 'Koleksi Sejarah Desa Sleman', 'Wi-Fi Publik Gratis', 'Taman Baca Terbuka'],
     photos: [
-      'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1507842229356-51c61504d3ab?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=900&q=80',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9e/Yogyakarta_Indonesia_Kraton-the-Sultans-Palace-02.jpg/960px-Yogyakarta_Indonesia_Kraton-the-Sultans-Palace-02.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9d/Kraton_Ngayogyakarta_Hadiningrat_%2849797461187%29.jpg/960px-Kraton_Ngayogyakarta_Hadiningrat_%2849797461187%29.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/3/38/Kraton_Ngayogyakarta_Hadiningrat%2C_Yogyakarta%2C_Indonesia%2C_20220818_0946_8882.jpg/960px-Kraton_Ngayogyakarta_Hadiningrat%2C_Yogyakarta%2C_Indonesia%2C_20220818_0946_8882.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/79/Kraton_Ngayogyakarta_Hadiningrat%2C_Yogyakarta%2C_Indonesia%2C_20220818_0950_8884.jpg/960px-Kraton_Ngayogyakarta_Hadiningrat%2C_Yogyakarta%2C_Indonesia%2C_20220818_0950_8884.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/5/56/Kraton_Ngayogyakarta_Hadiningrat%2C_Yogyakarta%2C_Indonesia%2C_20220818_0943_8872.jpg/960px-Kraton_Ngayogyakarta_Hadiningrat%2C_Yogyakarta%2C_Indonesia%2C_20220818_0943_8872.jpg',
     ],
     description:
       'Pusat literasi masyarakat Kabupaten Sleman yang asri dan nyaman. Dilengkapi ruang baca anak yang penuh warna, koleksi buku pertanian lereng Merapi, hingga literatur populer dan fiksi terkini.',
@@ -900,11 +840,11 @@ export const YOGYAKARTA_PLACES = [
     },
     facilities: ['Gedung Baru 4 Lantai Estetik', 'Amphitheater Literasi', 'Ruang Podcast & Kreatif', 'Akses Difabel Lengkap'],
     photos: [
-      'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1507842229356-51c61504d3ab?auto=format&fit=crop&w=900&q=80',
-      'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=900&q=80',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9e/Yogyakarta_Indonesia_Kraton-the-Sultans-Palace-02.jpg/960px-Yogyakarta_Indonesia_Kraton-the-Sultans-Palace-02.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9d/Kraton_Ngayogyakarta_Hadiningrat_%2849797461187%29.jpg/960px-Kraton_Ngayogyakarta_Hadiningrat_%2849797461187%29.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/3/38/Kraton_Ngayogyakarta_Hadiningrat%2C_Yogyakarta%2C_Indonesia%2C_20220818_0946_8882.jpg/960px-Kraton_Ngayogyakarta_Hadiningrat%2C_Yogyakarta%2C_Indonesia%2C_20220818_0946_8882.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/79/Kraton_Ngayogyakarta_Hadiningrat%2C_Yogyakarta%2C_Indonesia%2C_20220818_0950_8884.jpg/960px-Kraton_Ngayogyakarta_Hadiningrat%2C_Yogyakarta%2C_Indonesia%2C_20220818_0950_8884.jpg',
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/5/56/Kraton_Ngayogyakarta_Hadiningrat%2C_Yogyakarta%2C_Indonesia%2C_20220818_0943_8872.jpg/960px-Kraton_Ngayogyakarta_Hadiningrat%2C_Yogyakarta%2C_Indonesia%2C_20220818_0943_8872.jpg',
     ],
     description:
       'Gedung perpustakaan daerah baru yang sangat modern dan estetik di jantung Kabupaten Bantul. Menyediakan ruang baca berdesain hangat, amphitheater komunitas, serta koleksi literasi seni kriya dan budaya pesisir selatan Jogja.',

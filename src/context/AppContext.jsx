@@ -57,6 +57,7 @@ export function AppProvider({ children }) {
   const [journalTargetPlaceId, setJournalTargetPlaceId] = useState(null);
   const [isSavedModalOpen, setIsSavedModalOpen] = useState(false);
   const [isCertificateModalOpen, setIsCertificateModalOpen] = useState(false);
+  const [certificateCategory, setCertificateCategory] = useState('museum');
 
   // User Collections State (Firestore `users/{uid}/archives` & `users/{uid}/saved`)
   const [archives, setArchives] = useState([]);
@@ -446,9 +447,11 @@ export function AppProvider({ children }) {
         ? 100
         : 0;
 
-    const completedCategories = Object.entries(breakdown)
-      .filter(([, stat]) => stat.total > 0 && stat.visited >= stat.total)
-      .map(([key]) => key);
+    const completedCategories = simulateComplete
+      ? ['museum', 'cafe_book', 'perpustakaan']
+      : Object.entries(breakdown)
+          .filter(([, stat]) => stat.total > 0 && stat.visited >= stat.total)
+          .map(([key]) => key);
 
     const isEligibleForCertificate =
       simulateComplete ||
@@ -464,6 +467,21 @@ export function AppProvider({ children }) {
       isEligibleForCertificate,
     };
   }, [places, archives, simulateComplete]);
+
+  const openCertificateModal = useCallback(
+    (categoryKey = null) => {
+      const validCats = ['museum', 'cafe_book', 'perpustakaan'];
+      if (categoryKey && validCats.includes(categoryKey)) {
+        setCertificateCategory(categoryKey);
+      } else if (progressStats.completedCategories.length > 0) {
+        setCertificateCategory(progressStats.completedCategories[0]);
+      } else {
+        setCertificateCategory('museum');
+      }
+      setIsCertificateModalOpen(true);
+    },
+    [progressStats.completedCategories]
+  );
 
   return (
     <AppContext.Provider
@@ -500,6 +518,9 @@ export function AppProvider({ children }) {
         setIsSavedModalOpen,
         isCertificateModalOpen,
         setIsCertificateModalOpen,
+        certificateCategory,
+        setCertificateCategory,
+        openCertificateModal,
         archives,
         savedPlaces,
         isPlaceVisited,
