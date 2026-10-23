@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Compass, Sparkles, AlertCircle, MapPin } from 'lucide-react';
+import { Compass, Sparkles, AlertCircle, MapPin, SlidersHorizontal } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import jogjaIcon from '../../assets/jogja-literasi-icon.svg';
 
@@ -25,6 +25,7 @@ export default function LoginPageOverlay() {
     authLoading,
     authError,
     setAuthError,
+    setIsAdminModalOpen,
   } = useApp();
 
   const [mode, setMode] = useState('login'); // 'login' | 'register'
@@ -267,6 +268,18 @@ export default function LoginPageOverlay() {
             <p className="text-[12px] text-[#8C7365] text-center mt-3 leading-[1.4]">
               1-klik akses langsung bagi Dewan Juri ISCOMFEST 2026 tanpa perlu registrasi.
             </p>
+
+            {/* Tombol Akses Admin & Pengaturan API */}
+            <div className="mt-4 pt-3 border-t border-[#5C4033]/15 flex items-center justify-center">
+              <button
+                type="button"
+                onClick={() => setIsAdminModalOpen(true)}
+                className="text-xs font-bold text-[#8C7365] hover:text-[#5C4033] flex items-center gap-1.5 transition-colors py-1 px-2.5 rounded-lg hover:bg-[#F5EFE6]"
+              >
+                <SlidersHorizontal className="w-3.5 h-3.5" />
+                <span>Panel Admin (Kelola Lokasi & API)</span>
+              </button>
+            </div>
           </motion.div>
         </motion.div>
       )}

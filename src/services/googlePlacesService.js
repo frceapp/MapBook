@@ -3,12 +3,70 @@
  * Strictly follows AGENTS.md Section 2:
  * - Only fetches: displayName, rating, regularOpeningHours, and Top 5 Photos (photos.slice(0, 5))
  * - Mandatory Local Fallback / Mock Data for Yogyakarta locations when tested without API key or quota
+ * - Supports dynamic runtime API Key configuration via Admin Panel
  */
 
 import { YOGYAKARTA_PLACES } from './yogyakartaPlaces';
 
-const GOOGLE_PLACES_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
 const CACHE_KEY_PREFIX = 'lokabaca_jogja_place_v2_';
+const STORAGE_KEY_API = 'lokabaca_google_api_key_override';
+
+export function getGoogleApiKey() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY_API);
+    if (saved && saved.trim()) return saved.trim();
+  } catch (e) {
+    console.warn('API key storage read warning:', e);
+  }
+  return import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
+}
+
+export function setGoogleApiKey(key) {
+  try {
+    if (!key || !key.trim()) {
+      localStorage.removeItem(STORAGE_KEY_API);
+    } else {
+      localStorage.setItem(STORAGE_KEY_API, key.trim());
+    }
+  } catch (e) {
+    console.warn('API key storage write warning:', e);
+  }
+}
+
+/**
+ * Test a Google Maps API Key by making a lightweight probe request
+ */
+export async function testGoogleMapsApiKey(apiKey) {
+  const keyToTest = apiKey || getGoogleApiKey();
+  if (!keyToTest) {
+    return { success: false, message: 'Kunci API kosong. Menggunakan data lokal (mock fallback).' };
+  }
+
+  try {
+    // Probe places endpoint for Sonobudoyo Museum place
+    const response = await fetch(
+      `https://places.googleapis.com/v1/places/place_museum_sonobudoyo`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Goog-Api-Key': keyToTest,
+          'X-Goog-FieldMask': 'id,displayName',
+        },
+      }
+    );
+
+    if (response.status === 400 || response.status === 403) {
+      const data = await response.json().catch(() => ({}));
+      const reason = data.error?.message || `HTTP ${response.status} (Key Invalid / Quota Exceeded)`;
+      return { success: false, message: `Gagal: ${reason}` };
+    }
+
+    return { success: true, message: 'Kunci Google Maps Places API valid & terhubung!' };
+  } catch (err) {
+    return { success: false, message: `Kesalahan jaringan: ${err.message}` };
+  }
+}
 
 /**
  * Fetch place metadata from Google Maps Places API with automatic Yogyakarta local fallback
@@ -28,8 +86,10 @@ export async function getPlaceMetadata(placeId) {
       }
     : null;
 
+  const currentApiKey = getGoogleApiKey();
+
   // If no external Google API key is configured, return complete local fallback immediately
-  if (!GOOGLE_PLACES_API_KEY || GOOGLE_PLACES_API_KEY === 'YOUR_GOOGLE_MAPS_API_KEY') {
+  if (!currentApiKey || currentApiKey === 'YOUR_GOOGLE_MAPS_API_KEY') {
     return sanitizedFallback;
   }
 
@@ -57,7 +117,7 @@ export async function getPlaceMetadata(placeId) {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'X-Goog-Api-Key': GOOGLE_PLACES_API_KEY,
+          'X-Goog-Api-Key': currentApiKey,
           'X-Goog-FieldMask': 'displayName,rating,userRatingCount,regularOpeningHours,photos',
         },
       }
@@ -71,7 +131,7 @@ export async function getPlaceMetadata(placeId) {
 
     const apiPhotos = (data.photos || []).slice(0, 5).map(
       (photoObj) =>
-        `https://places.googleapis.com/v1/${photoObj.name}/media?maxWidthPx=900&maxHeightPx=675&key=${GOOGLE_PLACES_API_KEY}`
+        `https://places.googleapis.com/v1/${photoObj.name}/media?maxWidthPx=900&maxHeightPx=675&key=${currentApiKey}`
     );
 
     const merged = {

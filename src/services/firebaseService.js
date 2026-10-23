@@ -4,10 +4,10 @@
  * 1. users/{userId} -> { username, isGuest, createdAt }
  * 2. users/{userId}/archives/{placeId} -> { placeId, placeName, category, visitedDate, userRating, journalNote, updatedAt }
  * 3. users/{userId}/saved/{placeId} -> { placeId, placeName, category, savedAt }
- * Includes automatic LocalStorage fallback so Guest Mode & offline judge demos run with zero crashes.
+ * Supports dynamic configuration via Admin Panel and automatic LocalStorage fallback.
  */
 
-import { initializeApp, getApps, getApp } from 'firebase/app';
+import { initializeApp, getApps, deleteApp } from 'firebase/app';
 import {
   getAuth,
   signInWithEmailAndPassword,
@@ -27,41 +27,111 @@ import {
   deleteDoc,
 } from 'firebase/firestore';
 
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || '',
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || '',
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || '',
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || '',
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '',
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || '',
-};
-
-export const isFirebaseActive = Boolean(
-  firebaseConfig.apiKey &&
-    firebaseConfig.projectId &&
-    !firebaseConfig.apiKey.includes('YOUR_')
-);
-
-let app = null;
-let auth = null;
-let db = null;
-
-if (isFirebaseActive) {
-  try {
-    app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-    auth = getAuth(app);
-    db = getFirestore(app);
-  } catch (error) {
-    console.warn('Firebase init fallback to localStorage:', error);
-  }
-}
-
 const STORAGE_KEYS = {
   USER: 'lokabaca_jogja_user_v2',
   ARCHIVES_PREFIX: 'lokabaca_jogja_archives_v2_',
   SAVED_PREFIX: 'lokabaca_jogja_saved_v2_',
   USERS_DB: 'lokabaca_jogja_users_db_v2',
+  FIREBASE_CONFIG_OVERRIDE: 'lokabaca_firebase_config_override',
 };
+
+export function getStoredFirebaseConfig() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.FIREBASE_CONFIG_OVERRIDE);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {
+    console.warn('Could not read firebase config override:', e);
+  }
+
+  return {
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY || '',
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || '',
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || '',
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || '',
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '',
+    appId: import.meta.env.VITE_FIREBASE_APP_ID || '',
+  };
+}
+
+export function setStoredFirebaseConfig(config) {
+  try {
+    if (!config) {
+      localStorage.removeItem(STORAGE_KEYS.FIREBASE_CONFIG_OVERRIDE);
+    } else {
+      localStorage.setItem(STORAGE_KEYS.FIREBASE_CONFIG_OVERRIDE, JSON.stringify(config));
+    }
+    return initFirebaseInstances();
+  } catch (e) {
+    console.warn('Could not write firebase config override:', e);
+    return false;
+  }
+}
+
+export let app = null;
+export let auth = null;
+export let db = null;
+export let isFirebaseActive = false;
+
+function initFirebaseInstances() {
+  const cfg = getStoredFirebaseConfig();
+  const valid = Boolean(cfg.apiKey && cfg.projectId && !cfg.apiKey.includes('YOUR_'));
+
+  if (!valid) {
+    app = null;
+    auth = null;
+    db = null;
+    isFirebaseActive = false;
+    return false;
+  }
+
+  try {
+    const existingApps = getApps();
+    if (existingApps.length > 0) {
+      existingApps.forEach((existingApp) => {
+        deleteApp(existingApp).catch(() => {});
+      });
+    }
+
+    app = initializeApp(cfg);
+    auth = getAuth(app);
+    db = getFirestore(app);
+    isFirebaseActive = true;
+    return true;
+  } catch (err) {
+    console.warn('Firebase init error, fallback to LocalStorage:', err);
+    app = null;
+    auth = null;
+    db = null;
+    isFirebaseActive = false;
+    return false;
+  }
+}
+
+// Initial bootstrap
+initFirebaseInstances();
+
+/**
+ * Test Firebase Connection with a given config
+ */
+export async function testFirebaseConnection(config) {
+  if (!config || !config.apiKey || !config.projectId) {
+    return { success: false, message: 'API Key dan Project ID wajib diisi.' };
+  }
+
+  try {
+    const testApp = initializeApp(config, `test_${Date.now()}`);
+    const testDb = getFirestore(testApp);
+    // Lightweight test: try to get a non-existent or dummy doc
+    await getDoc(doc(testDb, 'system', 'ping'));
+    await deleteApp(testApp);
+    return { success: true, message: 'Koneksi ke Firebase Cloud Firestore berhasil!' };
+  } catch (err) {
+    return {
+      success: false,
+      message: `Gagal terhubung: ${err.message || 'Periksa kembali kredensial Firebase Anda.'}`,
+    };
+  }
+}
 
 // Default initial sample journals for Guest Mode so judges immediately see visited badges & Archive cards
 const INITIAL_GUEST_ARCHIVES = [
@@ -333,19 +403,6 @@ export async function fetchUserArchives(userId) {
   return [];
 }
 
-/**
- * Upsert a journal entry into users/{userId}/archives/{placeId}
- * Schema:
- * {
- *   placeId: "place_museum_sonobudoyo",
- *   placeName: "Museum Sonobudoyo",
- *   category: "museum",
- *   visitedDate: "2026-10-23",
- *   userRating: 5,
- *   journalNote: "Pameran topeng dan wayangnya sangat terawat, pencahayaannya estetik!",
- *   updatedAt: "2026-10-23T14:20:00Z"
- * }
- */
 export async function upsertArchiveJournal(userId, journalPayload) {
   const record = {
     placeId: journalPayload.placeId,
@@ -435,16 +492,6 @@ export async function fetchUserSavedPlaces(userId) {
   return [];
 }
 
-/**
- * Toggle a saved place in users/{userId}/saved/{placeId}
- * Schema:
- * {
- *   placeId: "place_cafe_buku_kecil",
- *   placeName: "Kedai Buku & Kopi Senja",
- *   category: "cafe_book",
- *   savedAt: "2026-10-23T09:15:00Z"
- * }
- */
 export async function toggleSavedPlace(userId, place) {
   const targetPlaceId = place.placeId || place.id;
   const current = await fetchUserSavedPlaces(userId);

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronDown, LogOut, RotateCcw } from 'lucide-react';
+import { ChevronDown, LogOut, RotateCcw, SlidersHorizontal } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { CATEGORIES } from '../../services/yogyakartaPlaces';
 
@@ -31,6 +31,7 @@ export default function TopFloatingBar() {
     activeView,
     handleLogout,
     resetMapToYogyakarta,
+    setIsAdminModalOpen,
   } = useApp();
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -154,6 +155,17 @@ export default function TopFloatingBar() {
           className="hidden sm:flex w-10 h-10 rounded-xl bg-[#F5EFE6] hover:bg-[#FFE699] border-2 border-[#5C4033] text-[#5C4033] items-center justify-center shadow-[0_2px_0_#5C4033] active:translate-y-0.5 active:shadow-none transition-all"
         >
           <RotateCcw className="w-4 h-4 text-[#5C4033]" strokeWidth={2} />
+        </button>
+
+        {/* Menu Admin (Kelola Lokasi & API) Button */}
+        <button
+          type="button"
+          onClick={() => setIsAdminModalOpen(true)}
+          title="Menu Admin (Kelola Lokasi & Integrasi API Google / Firebase)"
+          aria-label="Buka Menu Admin"
+          className="w-10 h-10 rounded-xl bg-[#F5EFE6] hover:bg-[#A0E7E5] border-2 border-[#5C4033] text-[#5C4033] flex items-center justify-center shadow-[0_2px_0_#5C4033] active:translate-y-0.5 active:shadow-none transition-all"
+        >
+          <SlidersHorizontal className="w-4 h-4 text-[#5C4033]" strokeWidth={2} />
         </button>
 
         {/* Logout Button */}

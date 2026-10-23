@@ -10,6 +10,7 @@ import ArchiveView from './components/archive/ArchiveView';
 import JournalFormModal from './components/archive/JournalFormModal';
 import ProfileProgressWidget from './components/certificate/ProfileProgressWidget';
 import CertificateModal from './components/certificate/CertificateModal';
+import AdminMenuModal from './components/admin/AdminMenuModal';
 
 function AppShell() {
   return (
@@ -31,10 +32,11 @@ function AppShell() {
       <ArchiveView />
       <ProfileProgressWidget />
 
-      {/* Sub-Modals: Saved Places, Add/Edit Journal Form, & Certificate Export */}
+      {/* Sub-Modals: Saved Places, Add/Edit Journal Form, Certificate Export & Admin Menu */}
       <SavedPlacesModal />
       <JournalFormModal />
       <CertificateModal />
+      <AdminMenuModal />
     </main>
   );
 }

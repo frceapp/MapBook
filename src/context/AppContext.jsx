@@ -1,6 +1,11 @@
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import { YOGYAKARTA_PLACES, CATEGORIES, YOGYAKARTA_CENTER } from '../services/yogyakartaPlaces';
-import { getPlaceMetadata } from '../services/googlePlacesService';
+import {
+  getPlaceMetadata,
+  getGoogleApiKey,
+  setGoogleApiKey as saveGoogleApiKeyToStorage,
+  testGoogleMapsApiKey,
+} from '../services/googlePlacesService';
 import {
   getStoredUserSession,
   loginWithAccount,
@@ -13,9 +18,29 @@ import {
   removeArchiveJournal,
   fetchUserSavedPlaces,
   toggleSavedPlace,
+  getStoredFirebaseConfig,
+  setStoredFirebaseConfig,
+  testFirebaseConnection,
+  isFirebaseActive,
 } from '../services/firebaseService';
 
 const AppContext = createContext(null);
+const STORAGE_CUSTOM_PLACES = 'lokabaca_jogja_custom_places_v2';
+
+function loadInitialPlaces() {
+  try {
+    const raw = localStorage.getItem(STORAGE_CUSTOM_PLACES);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    }
+  } catch (e) {
+    console.warn('Could not load custom places:', e);
+  }
+  return YOGYAKARTA_PLACES;
+}
 
 export function AppProvider({ children }) {
   // Authentication State
@@ -25,7 +50,7 @@ export function AppProvider({ children }) {
 
   // Map & Category Filter State
   const [activeCategory, setActiveCategory] = useState(CATEGORIES.ALL);
-  const [places, setPlaces] = useState(YOGYAKARTA_PLACES);
+  const [places, setPlaces] = useState(() => loadInitialPlaces());
   const [selectedPlaceId, setSelectedPlaceId] = useState(null);
   const [mapInstance, setMapInstance] = useState(null);
 
@@ -36,6 +61,14 @@ export function AppProvider({ children }) {
   const [journalTargetPlaceId, setJournalTargetPlaceId] = useState(null);
   const [isSavedModalOpen, setIsSavedModalOpen] = useState(false);
   const [isCertificateModalOpen, setIsCertificateModalOpen] = useState(false);
+
+  // Admin Modal State
+  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+
+  // API Config State
+  const [googleApiKey, setGoogleApiKeyState] = useState(() => getGoogleApiKey());
+  const [firebaseConfig, setFirebaseConfigState] = useState(() => getStoredFirebaseConfig());
+  const [firebaseStatus, setFirebaseStatus] = useState(() => isFirebaseActive);
 
   // User Collections State (Firestore + LocalStorage Fallback)
   const [archives, setArchives] = useState([]);
@@ -133,6 +166,124 @@ export function AppProvider({ children }) {
     }
   }, [mapInstance]);
 
+  // ==================== PLACES MANAGEMENT (ADMIN) ====================
+  const persistPlaces = (updatedPlaces) => {
+    setPlaces(updatedPlaces);
+    try {
+      localStorage.setItem(STORAGE_CUSTOM_PLACES, JSON.stringify(updatedPlaces));
+    } catch (e) {
+      console.warn('Could not persist custom places:', e);
+    }
+  };
+
+  const addPlace = (newPlace) => {
+    const placeId =
+      newPlace.placeId ||
+      newPlace.id ||
+      `place_${newPlace.category}_${Date.now()}`;
+
+    const sanitizedPlace = {
+      ...newPlace,
+      id: placeId,
+      placeId,
+      displayName: newPlace.displayName || newPlace.name,
+      name: newPlace.name || newPlace.displayName,
+      rating: Number(newPlace.rating) || 4.8,
+      userRatingCount: Number(newPlace.userRatingCount) || 100,
+      photos: (newPlace.photos || []).slice(0, 5),
+      facilities: Array.isArray(newPlace.facilities)
+        ? newPlace.facilities
+        : (newPlace.facilities || '')
+            .split(',')
+            .map((s) => s.trim())
+            .filter(Boolean),
+      coordinates: Array.isArray(newPlace.coordinates)
+        ? newPlace.coordinates
+        : [110.3695, -7.7956],
+      googleMapsUrl:
+        newPlace.googleMapsUrl ||
+        `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+          newPlace.name + ' Yogyakarta'
+        )}`,
+      regularOpeningHours: newPlace.regularOpeningHours || {
+        openNow: true,
+        todayHours: '08.00 – 21.00 WIB',
+        weekdayDescriptions: ['Buka setiap hari: 08.00 – 21.00 WIB'],
+      },
+    };
+
+    const updated = [sanitizedPlace, ...places];
+    persistPlaces(updated);
+    if (sanitizedPlace.coordinates) {
+      flyToPlace(sanitizedPlace.coordinates, 15);
+    }
+    return sanitizedPlace;
+  };
+
+  const updatePlace = (placeId, updatedFields) => {
+    const updated = places.map((p) => {
+      if (p.placeId === placeId || p.id === placeId) {
+        return {
+          ...p,
+          ...updatedFields,
+          id: placeId,
+          placeId,
+          displayName: updatedFields.displayName || updatedFields.name || p.displayName,
+          name: updatedFields.name || updatedFields.displayName || p.name,
+          rating: Number(updatedFields.rating ?? p.rating),
+          userRatingCount: Number(updatedFields.userRatingCount ?? p.userRatingCount),
+          photos: (updatedFields.photos || p.photos || []).slice(0, 5),
+          facilities: Array.isArray(updatedFields.facilities)
+            ? updatedFields.facilities
+            : typeof updatedFields.facilities === 'string'
+            ? updatedFields.facilities
+                .split(',')
+                .map((s) => s.trim())
+                .filter(Boolean)
+            : p.facilities,
+          coordinates: Array.isArray(updatedFields.coordinates)
+            ? updatedFields.coordinates
+            : p.coordinates,
+        };
+      }
+      return p;
+    });
+
+    persistPlaces(updated);
+  };
+
+  const deletePlace = (placeId) => {
+    const updated = places.filter((p) => p.placeId !== placeId && p.id !== placeId);
+    persistPlaces(updated);
+    if (selectedPlaceId === placeId) {
+      setSelectedPlaceId(null);
+    }
+  };
+
+  const resetPlacesToDefault = () => {
+    try {
+      localStorage.removeItem(STORAGE_CUSTOM_PLACES);
+    } catch (e) {
+      console.warn('Could not remove custom places storage:', e);
+    }
+    setPlaces(YOGYAKARTA_PLACES);
+    setSelectedPlaceId(null);
+    resetMapToYogyakarta();
+  };
+
+  // ==================== API & FIREBASE SETTINGS (ADMIN) ====================
+  const handleSaveGoogleApiKey = (newKey) => {
+    saveGoogleApiKeyToStorage(newKey);
+    setGoogleApiKeyState(newKey);
+  };
+
+  const handleSaveFirebaseConfig = (newConfig) => {
+    const ok = setStoredFirebaseConfig(newConfig);
+    setFirebaseConfigState(newConfig);
+    setFirebaseStatus(ok);
+    return ok;
+  };
+
   // ==================== AUTH ACTIONS ====================
   const handleLogin = async (identifier, password) => {
     setAuthLoading(true);
@@ -206,6 +357,7 @@ export function AppProvider({ children }) {
     setIsJournalModalOpen(false);
     setIsSavedModalOpen(false);
     setIsCertificateModalOpen(false);
+    setIsAdminModalOpen(false);
     setSimulateComplete(false);
   };
 
@@ -220,6 +372,7 @@ export function AppProvider({ children }) {
       setSelectedPlaceId(id);
       setActiveView('map');
       setIsSavedModalOpen(false);
+      setIsAdminModalOpen(false);
 
       const target = places.find((p) => p.placeId === id || p.id === id);
       if (target?.coordinates) {
@@ -383,6 +536,8 @@ export function AppProvider({ children }) {
         setIsSavedModalOpen,
         isCertificateModalOpen,
         setIsCertificateModalOpen,
+        isAdminModalOpen,
+        setIsAdminModalOpen,
         archives,
         savedPlaces,
         isPlaceVisited,
@@ -397,6 +552,17 @@ export function AppProvider({ children }) {
         setMapInstance,
         flyToPlace,
         resetMapToYogyakarta,
+        addPlace,
+        updatePlace,
+        deletePlace,
+        resetPlacesToDefault,
+        googleApiKey,
+        handleSaveGoogleApiKey,
+        testGoogleMapsApiKey,
+        firebaseConfig,
+        handleSaveFirebaseConfig,
+        testFirebaseConnection,
+        firebaseStatus,
         handleLogin,
         handleRegister,
         handleGoogleLogin,
