@@ -32,7 +32,7 @@ function AppShell() {
       <ArchiveView />
       <ProfileProgressWidget />
 
-      {/* Sub-Modals: Saved Places, Add/Edit Journal Form, Certificate Export & Admin Menu */}
+      {/* Sub-Modals: Saved Places, Add/Edit Journal Form, Certificate Export, & Admin Menu */}
       <SavedPlacesModal />
       <JournalFormModal />
       <CertificateModal />

@@ -1,83 +1,95 @@
-import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
-import { YOGYAKARTA_PLACES, CATEGORIES, YOGYAKARTA_CENTER } from '../services/yogyakartaPlaces';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+} from 'react';
 import {
-  getPlaceMetadata,
-  getGoogleApiKey,
-  setGoogleApiKey as saveGoogleApiKeyToStorage,
-  testGoogleMapsApiKey,
-} from '../services/googlePlacesService';
+  YOGYAKARTA_PLACES,
+  CATEGORIES,
+  YOGYAKARTA_CENTER,
+} from '../services/yogyakartaPlaces';
+import { getPlaceMetadata } from '../services/googlePlacesService';
 import {
   getStoredUserSession,
   loginWithAccount,
   registerAccount,
-  loginWithGooglePopup,
   enterGuestMode,
   signOutSession,
+  fetchAdminConfig,
+  saveAdminConfig,
+  fetchAdminPlaces,
+  saveAdminPlace,
+  deleteAdminPlace,
+  clearAllAdminPlaces,
+  bulkImportAdminPlaces,
   fetchUserArchives,
   upsertArchiveJournal,
   removeArchiveJournal,
   fetchUserSavedPlaces,
   toggleSavedPlace,
-  getStoredFirebaseConfig,
-  setStoredFirebaseConfig,
-  testFirebaseConnection,
-  isFirebaseActive,
 } from '../services/firebaseService';
 
 const AppContext = createContext(null);
-const STORAGE_CUSTOM_PLACES = 'lokabaca_jogja_custom_places_v2';
-
-function loadInitialPlaces() {
-  try {
-    const raw = localStorage.getItem(STORAGE_CUSTOM_PLACES);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed;
-      }
-    }
-  } catch (e) {
-    console.warn('Could not load custom places:', e);
-  }
-  return YOGYAKARTA_PLACES;
-}
 
 export function AppProvider({ children }) {
-  // Authentication State
+  // Authentication State (Backed by Cloud Firestore `users` collection)
   const [user, setUser] = useState(() => getStoredUserSession());
   const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState(null);
 
+  // Admin Config & Locations State (Backed by Cloud Firestore `settings/app_config` & `places`)
+  const [googleMapsApiKey, setGoogleMapsApiKey] = useState('');
+  const [places, setPlaces] = useState([]);
+  const [placesLoading, setPlacesLoading] = useState(true);
+
   // Map & Category Filter State
   const [activeCategory, setActiveCategory] = useState(CATEGORIES.ALL);
-  const [places, setPlaces] = useState(() => loadInitialPlaces());
   const [selectedPlaceId, setSelectedPlaceId] = useState(null);
   const [mapInstance, setMapInstance] = useState(null);
 
-  // Active Overlay / View State
-  // 'map' = Page 2 (or Page 3 if selectedPlaceId is set), 'archive' = Page 4 Full Overlay Drawer
+  // Active Overlay / View & Modals State
   const [activeView, setActiveView] = useState('map');
+  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
   const [isJournalModalOpen, setIsJournalModalOpen] = useState(false);
   const [journalTargetPlaceId, setJournalTargetPlaceId] = useState(null);
   const [isSavedModalOpen, setIsSavedModalOpen] = useState(false);
   const [isCertificateModalOpen, setIsCertificateModalOpen] = useState(false);
 
-  // Admin Modal State
-  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
-
-  // API Config State
-  const [googleApiKey, setGoogleApiKeyState] = useState(() => getGoogleApiKey());
-  const [firebaseConfig, setFirebaseConfigState] = useState(() => getStoredFirebaseConfig());
-  const [firebaseStatus, setFirebaseStatus] = useState(() => isFirebaseActive);
-
-  // User Collections State (Firestore + LocalStorage Fallback)
+  // User Collections State (Firestore `users/{uid}/archives` & `users/{uid}/saved`)
   const [archives, setArchives] = useState([]);
   const [savedPlaces, setSavedPlaces] = useState([]);
 
-  // Special Judge Demo Feature: "Simulasi 100% Selesai (Demo Juri)"
+  // Judge Demo Toggle ("Simulasi 100% Selesai (Demo Juri)")
   const [simulateComplete, setSimulateComplete] = useState(false);
 
-  // Load user's archives & saved places whenever user changes
+  // Load Admin Config (Google Maps API Key) & Admin-inputted Locations from Cloud Firestore on boot
+  useEffect(() => {
+    let mounted = true;
+    async function initAdminData() {
+      setPlacesLoading(true);
+      try {
+        const [configData, firestorePlaces] = await Promise.all([
+          fetchAdminConfig(),
+          fetchAdminPlaces(),
+        ]);
+        if (mounted) {
+          setGoogleMapsApiKey(configData.googleMapsApiKey || '');
+          setPlaces(firestorePlaces);
+        }
+      } finally {
+        if (mounted) setPlacesLoading(false);
+      }
+    }
+    initAdminData();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  // Load user's archives & saved places from Cloud Firestore whenever user changes
   useEffect(() => {
     let isMounted = true;
     async function loadUserCollections() {
@@ -103,7 +115,7 @@ export function AppProvider({ children }) {
     };
   }, [user]);
 
-  // Filtered Yogyakarta places based on category dropdown
+  // Filtered places based on category dropdown
   const filteredPlaces = useMemo(() => {
     if (activeCategory === CATEGORIES.ALL) return places;
     return places.filter((p) => p.category === activeCategory);
@@ -113,21 +125,30 @@ export function AppProvider({ children }) {
   const selectedPlace = useMemo(() => {
     if (!selectedPlaceId) return null;
     return (
-      places.find((p) => p.placeId === selectedPlaceId || p.id === selectedPlaceId) || null
+      places.find(
+        (p) => p.placeId === selectedPlaceId || p.id === selectedPlaceId
+      ) || null
     );
   }, [places, selectedPlaceId]);
 
-  // Fetch live Google Maps Places metadata (if API key set) when a place is selected
+  // Enrich selected place with live Google Maps Places metadata when selected
   useEffect(() => {
     let active = true;
     if (!selectedPlaceId) return;
+    const currentObj = places.find(
+      (p) => p.placeId === selectedPlaceId || p.id === selectedPlaceId
+    );
 
-    getPlaceMetadata(selectedPlaceId).then((enriched) => {
+    getPlaceMetadata(selectedPlaceId, currentObj).then((enriched) => {
       if (active && enriched) {
         setPlaces((prev) =>
           prev.map((p) =>
             p.placeId === selectedPlaceId || p.id === selectedPlaceId
-              ? { ...p, ...enriched, photos: (enriched.photos || p.photos || []).slice(0, 5) }
+              ? {
+                  ...p,
+                  ...enriched,
+                  photos: (enriched.photos || p.photos || []).slice(0, 5),
+                }
               : p
           )
         );
@@ -141,8 +162,12 @@ export function AppProvider({ children }) {
 
   // Camera FlyTo helper for Yogyakarta MapLibre instance
   const flyToPlace = useCallback(
-    (coordinates, zoom = 14.8) => {
-      if (mapInstance && Array.isArray(coordinates) && coordinates.length === 2) {
+    (coordinates, zoom = 15) => {
+      if (
+        mapInstance &&
+        Array.isArray(coordinates) &&
+        coordinates.length === 2
+      ) {
         mapInstance.flyTo({
           center: coordinates,
           zoom,
@@ -166,131 +191,16 @@ export function AppProvider({ children }) {
     }
   }, [mapInstance]);
 
-  // ==================== PLACES MANAGEMENT (ADMIN) ====================
-  const persistPlaces = (updatedPlaces) => {
-    setPlaces(updatedPlaces);
-    try {
-      localStorage.setItem(STORAGE_CUSTOM_PLACES, JSON.stringify(updatedPlaces));
-    } catch (e) {
-      console.warn('Could not persist custom places:', e);
-    }
-  };
-
-  const addPlace = (newPlace) => {
-    const placeId =
-      newPlace.placeId ||
-      newPlace.id ||
-      `place_${newPlace.category}_${Date.now()}`;
-
-    const sanitizedPlace = {
-      ...newPlace,
-      id: placeId,
-      placeId,
-      displayName: newPlace.displayName || newPlace.name,
-      name: newPlace.name || newPlace.displayName,
-      rating: Number(newPlace.rating) || 4.8,
-      userRatingCount: Number(newPlace.userRatingCount) || 100,
-      photos: (newPlace.photos || []).slice(0, 5),
-      facilities: Array.isArray(newPlace.facilities)
-        ? newPlace.facilities
-        : (newPlace.facilities || '')
-            .split(',')
-            .map((s) => s.trim())
-            .filter(Boolean),
-      coordinates: Array.isArray(newPlace.coordinates)
-        ? newPlace.coordinates
-        : [110.3695, -7.7956],
-      googleMapsUrl:
-        newPlace.googleMapsUrl ||
-        `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-          newPlace.name + ' Yogyakarta'
-        )}`,
-      regularOpeningHours: newPlace.regularOpeningHours || {
-        openNow: true,
-        todayHours: '08.00 – 21.00 WIB',
-        weekdayDescriptions: ['Buka setiap hari: 08.00 – 21.00 WIB'],
-      },
-    };
-
-    const updated = [sanitizedPlace, ...places];
-    persistPlaces(updated);
-    if (sanitizedPlace.coordinates) {
-      flyToPlace(sanitizedPlace.coordinates, 15);
-    }
-    return sanitizedPlace;
-  };
-
-  const updatePlace = (placeId, updatedFields) => {
-    const updated = places.map((p) => {
-      if (p.placeId === placeId || p.id === placeId) {
-        return {
-          ...p,
-          ...updatedFields,
-          id: placeId,
-          placeId,
-          displayName: updatedFields.displayName || updatedFields.name || p.displayName,
-          name: updatedFields.name || updatedFields.displayName || p.name,
-          rating: Number(updatedFields.rating ?? p.rating),
-          userRatingCount: Number(updatedFields.userRatingCount ?? p.userRatingCount),
-          photos: (updatedFields.photos || p.photos || []).slice(0, 5),
-          facilities: Array.isArray(updatedFields.facilities)
-            ? updatedFields.facilities
-            : typeof updatedFields.facilities === 'string'
-            ? updatedFields.facilities
-                .split(',')
-                .map((s) => s.trim())
-                .filter(Boolean)
-            : p.facilities,
-          coordinates: Array.isArray(updatedFields.coordinates)
-            ? updatedFields.coordinates
-            : p.coordinates,
-        };
-      }
-      return p;
-    });
-
-    persistPlaces(updated);
-  };
-
-  const deletePlace = (placeId) => {
-    const updated = places.filter((p) => p.placeId !== placeId && p.id !== placeId);
-    persistPlaces(updated);
-    if (selectedPlaceId === placeId) {
-      setSelectedPlaceId(null);
-    }
-  };
-
-  const resetPlacesToDefault = () => {
-    try {
-      localStorage.removeItem(STORAGE_CUSTOM_PLACES);
-    } catch (e) {
-      console.warn('Could not remove custom places storage:', e);
-    }
-    setPlaces(YOGYAKARTA_PLACES);
-    setSelectedPlaceId(null);
-    resetMapToYogyakarta();
-  };
-
-  // ==================== API & FIREBASE SETTINGS (ADMIN) ====================
-  const handleSaveGoogleApiKey = (newKey) => {
-    saveGoogleApiKeyToStorage(newKey);
-    setGoogleApiKeyState(newKey);
-  };
-
-  const handleSaveFirebaseConfig = (newConfig) => {
-    const ok = setStoredFirebaseConfig(newConfig);
-    setFirebaseConfigState(newConfig);
-    setFirebaseStatus(ok);
-    return ok;
-  };
-
-  // ==================== AUTH ACTIONS ====================
+  // ==================== AUTH ACTIONS (FIRESTORE) ====================
   const handleLogin = async (identifier, password) => {
     setAuthLoading(true);
     setAuthError(null);
     try {
       const loggedUser = await loginWithAccount(identifier, password);
       setUser(loggedUser);
+      if (loggedUser.role === 'admin') {
+        setIsAdminModalOpen(true);
+      }
       return loggedUser;
     } catch (err) {
       const msg = err.message || 'Gagal masuk. Periksa kembali akun Anda.';
@@ -307,25 +217,12 @@ export function AppProvider({ children }) {
     try {
       const registeredUser = await registerAccount(username, email, password);
       setUser(registeredUser);
+      if (registeredUser.role === 'admin') {
+        setIsAdminModalOpen(true);
+      }
       return registeredUser;
     } catch (err) {
       const msg = err.message || 'Gagal mendaftar akun baru.';
-      setAuthError(msg);
-      throw err;
-    } finally {
-      setAuthLoading(false);
-    }
-  };
-
-  const handleGoogleLogin = async () => {
-    setAuthLoading(true);
-    setAuthError(null);
-    try {
-      const googleUser = await loginWithGooglePopup();
-      setUser(googleUser);
-      return googleUser;
-    } catch (err) {
-      const msg = err.message || 'Gagal masuk dengan Google.';
       setAuthError(msg);
       throw err;
     } finally {
@@ -354,11 +251,51 @@ export function AppProvider({ children }) {
     setUser(null);
     setSelectedPlaceId(null);
     setActiveView('map');
+    setIsAdminModalOpen(false);
     setIsJournalModalOpen(false);
     setIsSavedModalOpen(false);
     setIsCertificateModalOpen(false);
-    setIsAdminModalOpen(false);
     setSimulateComplete(false);
+  };
+
+  // ==================== ADMIN ACTIONS (FIRESTORE PLACES & GOOGLE MAPS API) ====================
+  const updateGoogleMapsApiKey = async (newKey) => {
+    const saved = await saveAdminConfig({ googleMapsApiKey: newKey });
+    setGoogleMapsApiKey(saved.googleMapsApiKey);
+    return saved;
+  };
+
+  const addAdminLocation = async (placePayload) => {
+    const updatedList = await saveAdminPlace(placePayload);
+    setPlaces(updatedList);
+    if (placePayload.coordinates) {
+      flyToPlace(placePayload.coordinates, 15.2);
+    }
+    return updatedList;
+  };
+
+  const removeAdminLocation = async (placeId) => {
+    const updatedList = await deleteAdminPlace(placeId);
+    setPlaces(updatedList);
+    if (selectedPlaceId === placeId) {
+      setSelectedPlaceId(null);
+    }
+    return updatedList;
+  };
+
+  const clearAdminLocations = async () => {
+    const empty = await clearAllAdminPlaces();
+    setPlaces(empty);
+    setSelectedPlaceId(null);
+    return empty;
+  };
+
+  const importYogyakartaPresets = async (subset = null) => {
+    const toImport = subset || YOGYAKARTA_PLACES;
+    const updatedList = await bulkImportAdminPlaces(toImport);
+    setPlaces(updatedList);
+    resetMapToYogyakarta();
+    return updatedList;
   };
 
   // ==================== PLACE NAVIGATION (PAGE 3) ====================
@@ -376,7 +313,7 @@ export function AppProvider({ children }) {
 
       const target = places.find((p) => p.placeId === id || p.id === id);
       if (target?.coordinates) {
-        flyToPlace(target.coordinates, 14.8);
+        flyToPlace(target.coordinates, 15);
       }
     },
     [places, flyToPlace]
@@ -399,7 +336,7 @@ export function AppProvider({ children }) {
       if (nextTarget) {
         setSelectedPlaceId(nextTarget.placeId);
         if (nextTarget.coordinates) {
-          flyToPlace(nextTarget.coordinates, 14.8);
+          flyToPlace(nextTarget.coordinates, 15);
         }
       }
     },
@@ -467,15 +404,29 @@ export function AppProvider({ children }) {
 
     const breakdown = {
       museum: { label: 'Museum', visited: 0, total: 0, colorHex: '#FFE699' },
-      cafe_book: { label: 'Cafe Book', visited: 0, total: 0, colorHex: '#FFB7C5' },
-      perpustakaan: { label: 'Perpustakaan', visited: 0, total: 0, colorHex: '#A0E7E5' },
+      cafe_book: {
+        label: 'Cafe Book',
+        visited: 0,
+        total: 0,
+        colorHex: '#FFB7C5',
+      },
+      perpustakaan: {
+        label: 'Perpustakaan',
+        visited: 0,
+        total: 0,
+        colorHex: '#A0E7E5',
+      },
     };
 
     places.forEach((p) => {
       const cat = breakdown[p.category];
       if (cat) {
         cat.total += 1;
-        if (simulateComplete || visitedSet.has(p.placeId) || visitedSet.has(p.id)) {
+        if (
+          simulateComplete ||
+          visitedSet.has(p.placeId) ||
+          visitedSet.has(p.id)
+        ) {
           cat.visited += 1;
         }
       }
@@ -489,7 +440,11 @@ export function AppProvider({ children }) {
         breakdown.perpustakaan.visited;
 
     const percentage =
-      totalPlaces > 0 ? Math.min(100, Math.round((totalVisited / totalPlaces) * 100)) : 0;
+      totalPlaces > 0
+        ? Math.min(100, Math.round((totalVisited / totalPlaces) * 100))
+        : simulateComplete
+        ? 100
+        : 0;
 
     const completedCategories = Object.entries(breakdown)
       .filter(([, stat]) => stat.total > 0 && stat.visited >= stat.total)
@@ -517,9 +472,16 @@ export function AppProvider({ children }) {
         authLoading,
         authError,
         setAuthError,
+        googleMapsApiKey,
+        updateGoogleMapsApiKey,
+        places,
+        placesLoading,
+        addAdminLocation,
+        removeAdminLocation,
+        clearAdminLocations,
+        importYogyakartaPresets,
         activeCategory,
         setActiveCategory,
-        places,
         filteredPlaces,
         selectedPlace,
         selectedPlaceId,
@@ -528,6 +490,8 @@ export function AppProvider({ children }) {
         navigatePlace,
         activeView,
         setActiveView,
+        isAdminModalOpen,
+        setIsAdminModalOpen,
         isJournalModalOpen,
         setIsJournalModalOpen,
         journalTargetPlaceId,
@@ -536,8 +500,6 @@ export function AppProvider({ children }) {
         setIsSavedModalOpen,
         isCertificateModalOpen,
         setIsCertificateModalOpen,
-        isAdminModalOpen,
-        setIsAdminModalOpen,
         archives,
         savedPlaces,
         isPlaceVisited,
@@ -552,20 +514,8 @@ export function AppProvider({ children }) {
         setMapInstance,
         flyToPlace,
         resetMapToYogyakarta,
-        addPlace,
-        updatePlace,
-        deletePlace,
-        resetPlacesToDefault,
-        googleApiKey,
-        handleSaveGoogleApiKey,
-        testGoogleMapsApiKey,
-        firebaseConfig,
-        handleSaveFirebaseConfig,
-        testFirebaseConnection,
-        firebaseStatus,
         handleLogin,
         handleRegister,
-        handleGoogleLogin,
         handleGuestMode,
         handleLogout,
       }}

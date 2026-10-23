@@ -1,20 +1,17 @@
 /**
- * Firebase Authentication & Cloud Firestore Service
- * Strictly implements AGENTS.md Section 5 Database Schema:
- * 1. users/{userId} -> { username, isGuest, createdAt }
- * 2. users/{userId}/archives/{placeId} -> { placeId, placeName, category, visitedDate, userRating, journalNote, updatedAt }
- * 3. users/{userId}/saved/{placeId} -> { placeId, placeName, category, savedAt }
- * Supports dynamic configuration via Admin Panel and automatic LocalStorage fallback.
+ * Firebase Cloud Firestore Service (Project: test-b9d99)
+ * Handles:
+ * 1. Firestore Login & Registration (collection: users/{userId})
+ * 2. Admin-Managed Locations (collection: places/{placeId})
+ * 3. Admin Google Maps API Configuration (document: settings/app_config)
+ * 4. User Archives & Journals (collection: users/{userId}/archives/{placeId})
+ * 5. User Saved Places (collection: users/{userId}/saved/{placeId})
  */
 
-import { initializeApp, getApps, deleteApp } from 'firebase/app';
+import { initializeApp, getApps, getApp } from 'firebase/app';
 import {
   getAuth,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
   signInAnonymously,
-  GoogleAuthProvider,
-  signInWithPopup,
   signOut,
 } from 'firebase/auth';
 import {
@@ -25,164 +22,57 @@ import {
   collection,
   getDocs,
   deleteDoc,
+  query,
+  where,
 } from 'firebase/firestore';
+
+// Live Firebase Cloud Firestore Configuration (test-b9d99)
+const firebaseConfig = {
+  apiKey:
+    import.meta.env.VITE_FIREBASE_API_KEY ||
+    'AIzaSyChqc5Eg8sD-lYB9ASGBSEY7Ns42ZXa0ZY',
+  authDomain:
+    import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || 'test-b9d99.firebaseapp.com',
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || 'test-b9d99',
+  storageBucket:
+    import.meta.env.VITE_FIREBASE_STORAGE_BUCKET ||
+    'test-b9d99.firebasestorage.app',
+  messagingSenderId:
+    import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '549349331038',
+  appId:
+    import.meta.env.VITE_FIREBASE_APP_ID ||
+    '1:549349331038:web:d618a2ddd78098d0eee4cf',
+};
+
+export const isFirebaseActive = Boolean(
+  firebaseConfig.apiKey && firebaseConfig.projectId
+);
+export const isFirebaseConfigured = isFirebaseActive;
+
+let app = null;
+let auth = null;
+let db = null;
+
+try {
+  app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+  auth = getAuth(app);
+  db = getFirestore(app);
+} catch (error) {
+  console.warn('Firestore initialization warning:', error);
+}
+
+export { db, auth };
 
 const STORAGE_KEYS = {
   USER: 'lokabaca_jogja_user_v2',
+  PLACES: 'lokabaca_jogja_admin_places_v2',
+  CONFIG: 'lokabaca_jogja_admin_config_v2',
   ARCHIVES_PREFIX: 'lokabaca_jogja_archives_v2_',
   SAVED_PREFIX: 'lokabaca_jogja_saved_v2_',
   USERS_DB: 'lokabaca_jogja_users_db_v2',
-  FIREBASE_CONFIG_OVERRIDE: 'lokabaca_firebase_config_override',
 };
 
-export function getStoredFirebaseConfig() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEYS.FIREBASE_CONFIG_OVERRIDE);
-    if (raw) return JSON.parse(raw);
-  } catch (e) {
-    console.warn('Could not read firebase config override:', e);
-  }
-
-  return {
-    apiKey: import.meta.env.VITE_FIREBASE_API_KEY || '',
-    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || '',
-    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || '',
-    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || '',
-    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '',
-    appId: import.meta.env.VITE_FIREBASE_APP_ID || '',
-  };
-}
-
-export function setStoredFirebaseConfig(config) {
-  try {
-    if (!config) {
-      localStorage.removeItem(STORAGE_KEYS.FIREBASE_CONFIG_OVERRIDE);
-    } else {
-      localStorage.setItem(STORAGE_KEYS.FIREBASE_CONFIG_OVERRIDE, JSON.stringify(config));
-    }
-    return initFirebaseInstances();
-  } catch (e) {
-    console.warn('Could not write firebase config override:', e);
-    return false;
-  }
-}
-
-export let app = null;
-export let auth = null;
-export let db = null;
-export let isFirebaseActive = false;
-
-function initFirebaseInstances() {
-  const cfg = getStoredFirebaseConfig();
-  const valid = Boolean(cfg.apiKey && cfg.projectId && !cfg.apiKey.includes('YOUR_'));
-
-  if (!valid) {
-    app = null;
-    auth = null;
-    db = null;
-    isFirebaseActive = false;
-    return false;
-  }
-
-  try {
-    const existingApps = getApps();
-    if (existingApps.length > 0) {
-      existingApps.forEach((existingApp) => {
-        deleteApp(existingApp).catch(() => {});
-      });
-    }
-
-    app = initializeApp(cfg);
-    auth = getAuth(app);
-    db = getFirestore(app);
-    isFirebaseActive = true;
-    return true;
-  } catch (err) {
-    console.warn('Firebase init error, fallback to LocalStorage:', err);
-    app = null;
-    auth = null;
-    db = null;
-    isFirebaseActive = false;
-    return false;
-  }
-}
-
-// Initial bootstrap
-initFirebaseInstances();
-
-/**
- * Test Firebase Connection with a given config
- */
-export async function testFirebaseConnection(config) {
-  if (!config || !config.apiKey || !config.projectId) {
-    return { success: false, message: 'API Key dan Project ID wajib diisi.' };
-  }
-
-  try {
-    const testApp = initializeApp(config, `test_${Date.now()}`);
-    const testDb = getFirestore(testApp);
-    // Lightweight test: try to get a non-existent or dummy doc
-    await getDoc(doc(testDb, 'system', 'ping'));
-    await deleteApp(testApp);
-    return { success: true, message: 'Koneksi ke Firebase Cloud Firestore berhasil!' };
-  } catch (err) {
-    return {
-      success: false,
-      message: `Gagal terhubung: ${err.message || 'Periksa kembali kredensial Firebase Anda.'}`,
-    };
-  }
-}
-
-// Default initial sample journals for Guest Mode so judges immediately see visited badges & Archive cards
-const INITIAL_GUEST_ARCHIVES = [
-  {
-    placeId: 'place_museum_sonobudoyo',
-    placeName: 'Museum Sonobudoyo Unit I',
-    category: 'museum',
-    visitedDate: '2026-10-20',
-    userRating: 5,
-    journalNote:
-      'Pameran topeng dan wayangnya sangat terawat, pencahayaannya estetik! Ruang imersif sejarah Mataram di gedung baru bikin betah berjam-jam.',
-    updatedAt: '2026-10-20T14:20:00Z',
-  },
-  {
-    placeId: 'place_cafe_blanco_books',
-    placeName: 'Blanco Coffee & Books',
-    category: 'cafe_book',
-    visitedDate: '2026-10-21',
-    userRating: 5,
-    journalNote:
-      'Suasana baca bukunya tenang banget di dekat Tugu Jogja. Rak bukunya tinggi penuh koleksi sastra klasik, ditemani kopi manual brew yang harum.',
-    updatedAt: '2026-10-21T16:45:00Z',
-  },
-  {
-    placeId: 'place_perpus_grhatama_pustaka',
-    placeName: 'Grhatama Pustaka DIY',
-    category: 'perpustakaan',
-    visitedDate: '2026-10-22',
-    userRating: 5,
-    journalNote:
-      'Perpustakaan daerah termegah di Yogyakarta! Koleksi ruang naskah langka Jogja sangat lengkap dan area co-working lantai duanya nyaman sekali.',
-    updatedAt: '2026-10-22T11:10:00Z',
-  },
-];
-
-const INITIAL_GUEST_SAVED = [
-  {
-    placeId: 'place_cafe_buku_kecil',
-    placeName: 'Kedai Buku & Kopi Senja Prawirotaman',
-    category: 'cafe_book',
-    savedAt: '2026-10-23T09:15:00Z',
-  },
-  {
-    placeId: 'place_museum_ullen_sentalu',
-    placeName: 'Museum Ullen Sentalu',
-    category: 'museum',
-    savedAt: '2026-10-23T09:30:00Z',
-  },
-];
-
-// ==================== 1. AUTHENTICATION ====================
+// ==================== 1. FIRESTORE LOGIN & REGISTRATION (users/{userId}) ====================
 
 export function getStoredUserSession() {
   try {
@@ -201,192 +91,524 @@ function persistUserSession(userObj) {
   }
 }
 
-export async function loginWithAccount(identifier, password) {
-  const cleanId = identifier.trim();
-  const isEmail = cleanId.includes('@');
-  const emailToUse = isEmail ? cleanId : `${cleanId.toLowerCase().replace(/\s+/g, '')}@lokabaca.id`;
-
-  if (isFirebaseActive && auth && db) {
-    try {
-      const cred = await signInWithEmailAndPassword(auth, emailToUse, password);
-      const userSnap = await getDoc(doc(db, 'users', cred.user.uid));
-      const profile = userSnap.exists()
-        ? userSnap.data()
-        : {
-            username: isEmail ? cleanId.split('@')[0] : cleanId,
-            isGuest: false,
-            createdAt: new Date().toISOString(),
-          };
-
-      const sessionUser = {
-        uid: cred.user.uid,
-        username: profile.username,
-        isGuest: false,
-        createdAt: profile.createdAt,
-      };
-      persistUserSession(sessionUser);
-      return sessionUser;
-    } catch (err) {
-      console.warn('Firebase login fallback:', err.message);
-    }
-  }
-
-  // LocalStorage account lookup or instant login
-  const localUsersRaw = localStorage.getItem(STORAGE_KEYS.USERS_DB);
-  const localUsers = localUsersRaw ? JSON.parse(localUsersRaw) : {};
-  const key = cleanId.toLowerCase();
-  const existing = localUsers[key];
-
-  const usernameDisplay = existing?.username || (isEmail ? cleanId.split('@')[0] : cleanId);
-  const formattedName =
-    usernameDisplay.charAt(0).toUpperCase() + usernameDisplay.slice(1);
-
-  const sessionUser = {
-    uid: existing?.uid || `user_${btoa(encodeURIComponent(key)).replace(/=/g, '').slice(0, 12)}`,
-    username: formattedName,
-    isGuest: false,
-    createdAt: existing?.createdAt || new Date().toISOString(),
-  };
-
-  persistUserSession(sessionUser);
-  return sessionUser;
-}
-
+/**
+ * Register a new user account in Cloud Firestore collection `users/{userId}`
+ */
 export async function registerAccount(username, emailOrId, password) {
-  const cleanUsername = username.trim() || 'Nadia';
-  const cleanEmail = (emailOrId || '').trim();
-  const emailToUse = cleanEmail.includes('@')
-    ? cleanEmail
-    : `${cleanUsername.toLowerCase().replace(/\s+/g, '')}@lokabaca.id`;
+  const cleanUsername = (username || '').trim() || 'Nadia';
+  const cleanIdentifier = (emailOrId || cleanUsername).trim().toLowerCase();
+  const isAdminName =
+    cleanIdentifier === 'admin' ||
+    cleanIdentifier === 'admin@jogja.id' ||
+    cleanUsername.toLowerCase() === 'admin';
+
+  const uid = `user_${cleanIdentifier.replace(/[^a-z0-9]/g, '_')}`;
 
   const userProfile = {
+    uid,
     username: cleanUsername,
+    identifier: cleanIdentifier,
+    email: cleanIdentifier.includes('@')
+      ? cleanIdentifier
+      : `${cleanIdentifier}@lokabaca.id`,
+    password: password,
+    role: isAdminName ? 'admin' : 'user',
     isGuest: false,
     createdAt: new Date().toISOString(),
   };
 
-  if (isFirebaseActive && auth && db) {
+  if (db) {
     try {
-      const cred = await createUserWithEmailAndPassword(auth, emailToUse, password);
-      await setDoc(doc(db, 'users', cred.user.uid), userProfile);
-      const sessionUser = { uid: cred.user.uid, ...userProfile };
-      persistUserSession(sessionUser);
-      return sessionUser;
+      const existingRef = doc(db, 'users', uid);
+      const existingSnap = await getDoc(existingRef);
+      if (existingSnap.exists()) {
+        throw new Error(
+          'Username atau email sudah terdaftar di Cloud Firestore. Silakan langsung Masuk.'
+        );
+      }
+      await setDoc(existingRef, userProfile);
     } catch (err) {
-      console.warn('Firebase register fallback:', err.message);
+      if (err.message?.includes('sudah terdaftar')) {
+        throw err;
+      }
+      console.warn('Firestore registerAccount fallback:', err.message);
     }
   }
 
-  const uid = `user_${Date.now()}`;
-  const sessionUser = { uid, ...userProfile };
-
+  // Local mirror backup
   try {
-    const localUsersRaw = localStorage.getItem(STORAGE_KEYS.USERS_DB);
-    const localUsers = localUsersRaw ? JSON.parse(localUsersRaw) : {};
-    localUsers[cleanUsername.toLowerCase()] = sessionUser;
-    if (cleanEmail) localUsers[cleanEmail.toLowerCase()] = sessionUser;
-    localStorage.setItem(STORAGE_KEYS.USERS_DB, JSON.stringify(localUsers));
+    const raw = localStorage.getItem(STORAGE_KEYS.USERS_DB);
+    const localDb = raw ? JSON.parse(raw) : {};
+    localDb[cleanIdentifier] = userProfile;
+    localDb[cleanUsername.toLowerCase()] = userProfile;
+    localStorage.setItem(STORAGE_KEYS.USERS_DB, JSON.stringify(localDb));
   } catch (e) {
-    console.warn('Local user db write warning:', e);
+    console.warn('Local user mirror warning:', e);
   }
 
+  const sessionUser = {
+    uid: userProfile.uid,
+    username: userProfile.username,
+    email: userProfile.email,
+    role: userProfile.role,
+    isGuest: false,
+    createdAt: userProfile.createdAt,
+  };
   persistUserSession(sessionUser);
   return sessionUser;
 }
 
-export async function loginWithGooglePopup() {
-  if (isFirebaseActive && auth && db) {
+/**
+ * Login user by checking Cloud Firestore collection `users/{userId}`
+ * Supports built-in Admin account (`admin` / `admin123`) as well as registered Firestore users.
+ */
+export async function loginWithAccount(identifier, password) {
+  const cleanId = (identifier || '').trim().toLowerCase();
+  if (!cleanId || !password) {
+    throw new Error('Username/Email dan Password wajib diisi.');
+  }
+
+  // Built-in Admin Account support (automatically synced to Firestore `users/user_admin`)
+  if (
+    (cleanId === 'admin' || cleanId === 'admin@jogja.id') &&
+    password === 'admin123'
+  ) {
+    const adminProfile = {
+      uid: 'user_admin',
+      username: 'Admin Jogja',
+      identifier: 'admin',
+      email: 'admin@jogja.id',
+      role: 'admin',
+      isGuest: false,
+      createdAt: new Date().toISOString(),
+    };
+    if (db) {
+      try {
+        await setDoc(
+          doc(db, 'users', 'user_admin'),
+          { ...adminProfile, password: 'admin123' },
+          { merge: true }
+        );
+      } catch (e) {
+        console.warn('Admin Firestore sync warning:', e);
+      }
+    }
+    persistUserSession(adminProfile);
+    return adminProfile;
+  }
+
+  const candidateUid = `user_${cleanId.replace(/[^a-z0-9]/g, '_')}`;
+
+  if (db) {
     try {
-      const provider = new GoogleAuthProvider();
-      const cred = await signInWithPopup(auth, provider);
-      const userProfile = {
-        username: cred.user.displayName || cred.user.email?.split('@')[0] || 'Nadia',
+      // 1. Direct doc lookup by deterministic UID
+      const directSnap = await getDoc(doc(db, 'users', candidateUid));
+      let matchedData = directSnap.exists() ? directSnap.data() : null;
+
+      // 2. If not found by UID, query by identifier or email or username
+      if (!matchedData) {
+        const qIdentifier = query(
+          collection(db, 'users'),
+          where('identifier', '==', cleanId)
+        );
+        const snapId = await getDocs(qIdentifier);
+        if (!snapId.empty) {
+          matchedData = snapId.docs[0].data();
+        }
+      }
+
+      if (!matchedData && cleanId.includes('@')) {
+        const qEmail = query(
+          collection(db, 'users'),
+          where('email', '==', cleanId)
+        );
+        const snapEmail = await getDocs(qEmail);
+        if (!snapEmail.empty) {
+          matchedData = snapEmail.docs[0].data();
+        }
+      }
+
+      if (matchedData) {
+        if (matchedData.password && matchedData.password !== password) {
+          throw new Error('Password salah. Silakan periksa kembali kata sandi Anda.');
+        }
+
+        const sessionUser = {
+          uid: matchedData.uid || candidateUid,
+          username: matchedData.username || identifier,
+          email: matchedData.email || `${cleanId}@lokabaca.id`,
+          role: matchedData.role || (cleanId === 'admin' ? 'admin' : 'user'),
+          isGuest: false,
+          createdAt: matchedData.createdAt || new Date().toISOString(),
+        };
+        persistUserSession(sessionUser);
+        return sessionUser;
+      }
+
+      // 3. If user doesn't exist yet in Firestore, create & store in Firestore `users/{uid}` so login works seamlessly
+      const displayUsername = cleanId.includes('@')
+        ? cleanId.split('@')[0]
+        : identifier.trim();
+      const formattedUsername =
+        displayUsername.charAt(0).toUpperCase() + displayUsername.slice(1);
+
+      const newFirestoreUser = {
+        uid: candidateUid,
+        username: formattedUsername,
+        identifier: cleanId,
+        email: cleanId.includes('@') ? cleanId : `${cleanId}@lokabaca.id`,
+        password,
+        role: cleanId === 'admin' ? 'admin' : 'user',
         isGuest: false,
         createdAt: new Date().toISOString(),
       };
-      await setDoc(doc(db, 'users', cred.user.uid), userProfile, { merge: true });
-      const sessionUser = { uid: cred.user.uid, ...userProfile };
+
+      await setDoc(doc(db, 'users', candidateUid), newFirestoreUser);
+
+      const sessionUser = {
+        uid: newFirestoreUser.uid,
+        username: newFirestoreUser.username,
+        email: newFirestoreUser.email,
+        role: newFirestoreUser.role,
+        isGuest: false,
+        createdAt: newFirestoreUser.createdAt,
+      };
       persistUserSession(sessionUser);
       return sessionUser;
     } catch (err) {
-      console.warn('Google sign-in fallback:', err.message);
+      if (err.message?.includes('Password salah')) {
+        throw err;
+      }
+      console.warn('Firestore login query fallback:', err.message);
     }
   }
 
-  // Fallback simulated Google login for offline demo environments
-  const sessionUser = {
-    uid: 'user_google_nadia',
-    username: 'Nadia Putri',
+  // Fallback to localStorage if offline
+  const displayUsername = cleanId.includes('@')
+    ? cleanId.split('@')[0]
+    : identifier.trim();
+  const formattedName =
+    displayUsername.charAt(0).toUpperCase() + displayUsername.slice(1);
+
+  const fallbackUser = {
+    uid: candidateUid,
+    username: formattedName,
+    email: cleanId.includes('@') ? cleanId : `${cleanId}@lokabaca.id`,
+    role: cleanId === 'admin' ? 'admin' : 'user',
     isGuest: false,
     createdAt: new Date().toISOString(),
   };
-  persistUserSession(sessionUser);
-  return sessionUser;
+  persistUserSession(fallbackUser);
+  return fallbackUser;
 }
 
+/**
+ * Guest Mode Login (Also recorded in Cloud Firestore `users/{guestId}`)
+ */
 export async function enterGuestMode() {
   let uid = 'guest_yogyakarta_demo';
   const guestProfile = {
+    uid,
     username: 'Penjelajah Jogja',
+    role: 'guest',
     isGuest: true,
     createdAt: new Date().toISOString(),
   };
 
-  if (isFirebaseActive && auth && db) {
+  if (db) {
     try {
-      const cred = await signInAnonymously(auth);
-      uid = cred.user.uid;
+      if (auth) {
+        try {
+          const cred = await signInAnonymously(auth);
+          uid = cred.user.uid;
+          guestProfile.uid = uid;
+        } catch {
+          // Use deterministic guest_yogyakarta_demo if anonymous auth is not enabled in console
+        }
+      }
       await setDoc(doc(db, 'users', uid), guestProfile, { merge: true });
     } catch (err) {
-      console.warn('Anonymous Firebase auth fallback to localStorage:', err.message);
+      console.warn('Firestore guest record fallback:', err.message);
     }
   }
 
-  const sessionUser = { uid, ...guestProfile };
-  persistUserSession(sessionUser);
-
-  // Seed initial sample Yogyakarta journals & saved places if first time in Guest Mode
-  try {
-    const archiveKey = `${STORAGE_KEYS.ARCHIVES_PREFIX}${uid}`;
-    if (!localStorage.getItem(archiveKey)) {
-      localStorage.setItem(archiveKey, JSON.stringify(INITIAL_GUEST_ARCHIVES));
-    }
-    const savedKey = `${STORAGE_KEYS.SAVED_PREFIX}${uid}`;
-    if (!localStorage.getItem(savedKey)) {
-      localStorage.setItem(savedKey, JSON.stringify(INITIAL_GUEST_SAVED));
-    }
-  } catch (e) {
-    console.warn('Guest seed error:', e);
-  }
-
-  return sessionUser;
+  persistUserSession(guestProfile);
+  return guestProfile;
 }
 
 export async function signOutSession() {
-  if (isFirebaseActive && auth) {
+  if (auth) {
     try {
       await signOut(auth);
-    } catch (e) {
-      console.warn('Sign out warning:', e);
+    } catch {
+      // Ignore
     }
   }
   localStorage.removeItem(STORAGE_KEYS.USER);
 }
 
-// ==================== 2. ARCHIVES CRUD (users/{userId}/archives/{placeId}) ====================
+// ==================== 2. ADMIN CONFIG & GOOGLE MAPS API KEY (settings/app_config) ====================
+
+export function getLocalGoogleMapsApiKey() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.CONFIG);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed.googleMapsApiKey) return parsed.googleMapsApiKey;
+    }
+  } catch {
+    // Ignore
+  }
+  return import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
+}
+
+export async function fetchAdminConfig() {
+  const localKey = getLocalGoogleMapsApiKey();
+
+  if (db) {
+    try {
+      const snap = await getDoc(doc(db, 'settings', 'app_config'));
+      if (snap.exists()) {
+        const data = snap.data();
+        const merged = {
+          googleMapsApiKey: data.googleMapsApiKey || localKey || '',
+          updatedAt: data.updatedAt || new Date().toISOString(),
+        };
+        localStorage.setItem(STORAGE_KEYS.CONFIG, JSON.stringify(merged));
+        return merged;
+      }
+    } catch (err) {
+      console.warn('Firestore fetchAdminConfig warning:', err.message);
+    }
+  }
+
+  return {
+    googleMapsApiKey: localKey || '',
+    updatedAt: null,
+  };
+}
+
+export async function saveAdminConfig({ googleMapsApiKey }) {
+  const cleanKey = (googleMapsApiKey || '').trim();
+  const payload = {
+    googleMapsApiKey: cleanKey,
+    updatedAt: new Date().toISOString(),
+  };
+
+  try {
+    localStorage.setItem(STORAGE_KEYS.CONFIG, JSON.stringify(payload));
+  } catch (e) {
+    console.warn('Local config write warning:', e);
+  }
+
+  if (db) {
+    try {
+      await setDoc(doc(db, 'settings', 'app_config'), payload, { merge: true });
+    } catch (err) {
+      console.warn('Firestore saveAdminConfig warning:', err.message);
+    }
+  }
+
+  return payload;
+}
+
+// ==================== 3. ADMIN LOCATIONS CRUD (places/{placeId} in Cloud Firestore) ====================
+
+/**
+ * Fetch all locations inputted by Admin from Cloud Firestore `places` collection
+ */
+export async function fetchAdminPlaces() {
+  if (db) {
+    try {
+      const snap = await getDocs(collection(db, 'places'));
+      const list = [];
+      snap.forEach((docSnap) => {
+        const data = docSnap.data();
+        if (data && Array.isArray(data.coordinates) && data.coordinates.length === 2) {
+          list.push({
+            ...data,
+            id: data.placeId || docSnap.id,
+            placeId: data.placeId || docSnap.id,
+            photos: (data.photos || []).slice(0, 5),
+          });
+        }
+      });
+
+      // Sort by createdAt descending or name
+      list.sort((a, b) =>
+        (b.createdAt || '').localeCompare(a.createdAt || '')
+      );
+
+      localStorage.setItem(STORAGE_KEYS.PLACES, JSON.stringify(list));
+      return list;
+    } catch (err) {
+      console.warn('Firestore fetchAdminPlaces fallback:', err.message);
+    }
+  }
+
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.PLACES);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Add or update a location inputted by Admin into Cloud Firestore `places/{placeId}`
+ */
+export async function saveAdminPlace(placeData) {
+  const placeId =
+    placeData.placeId ||
+    placeData.id ||
+    `place_${placeData.category || 'museum'}_${Date.now()}`;
+
+  const cleanCoordinates = Array.isArray(placeData.coordinates)
+    ? [Number(placeData.coordinates[0]), Number(placeData.coordinates[1])]
+    : [110.3695, -7.7956];
+
+  const record = {
+    id: placeId,
+    placeId,
+    displayName: (placeData.displayName || placeData.name || 'Lokasi Literasi Jogja').trim(),
+    name: (placeData.name || placeData.displayName || 'Lokasi Literasi Jogja').trim(),
+    category: placeData.category || 'museum',
+    rating: Number(placeData.rating) || 4.8,
+    userRatingCount: Number(placeData.userRatingCount) || 320,
+    address:
+      placeData.address ||
+      'Daerah Istimewa Yogyakarta',
+    district: placeData.district || 'Yogyakarta',
+    coordinates: cleanCoordinates, // [lng, lat]
+    regularOpeningHours: placeData.regularOpeningHours || {
+      openNow: true,
+      todayHours: '08.00 – 21.00 WIB',
+      weekdayDescriptions: ['Senin – Minggu: 08.00 – 21.00 WIB'],
+    },
+    facilities: Array.isArray(placeData.facilities)
+      ? placeData.facilities
+      : ['Area Baca Nyaman', 'Koleksi Literasi', 'Spot Edukasi'],
+    photos: (placeData.photos || []).slice(0, 5),
+    description:
+      placeData.description ||
+      `Destinasi ${placeData.category === 'cafe_book' ? 'Cafe Book' : placeData.category === 'perpustakaan' ? 'Perpustakaan' : 'Museum'} pilihan di Daerah Istimewa Yogyakarta.`,
+    googleMapsUrl:
+      placeData.googleMapsUrl ||
+      `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+        (placeData.displayName || placeData.name) + ' Yogyakarta'
+      )}`,
+    searchSource: placeData.searchSource || 'Google Maps API',
+    createdAt: placeData.createdAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  if (db) {
+    try {
+      await setDoc(doc(db, 'places', placeId), record);
+    } catch (err) {
+      console.warn('Firestore saveAdminPlace warning:', err.message);
+    }
+  }
+
+  const current = await fetchAdminPlaces();
+  const existsIdx = current.findIndex((p) => p.placeId === placeId);
+  let updated;
+  if (existsIdx >= 0) {
+    updated = [...current];
+    updated[existsIdx] = record;
+  } else {
+    updated = [record, ...current];
+  }
+
+  try {
+    localStorage.setItem(STORAGE_KEYS.PLACES, JSON.stringify(updated));
+  } catch (e) {
+    console.warn('LocalStorage places write warning:', e);
+  }
+
+  return updated;
+}
+
+/**
+ * Delete a location from Cloud Firestore `places/{placeId}`
+ */
+export async function deleteAdminPlace(placeId) {
+  if (db) {
+    try {
+      await deleteDoc(doc(db, 'places', placeId));
+    } catch (err) {
+      console.warn('Firestore deleteAdminPlace warning:', err.message);
+    }
+  }
+
+  const current = await fetchAdminPlaces();
+  const updated = current.filter((p) => p.placeId !== placeId && p.id !== placeId);
+  try {
+    localStorage.setItem(STORAGE_KEYS.PLACES, JSON.stringify(updated));
+  } catch (e) {
+    console.warn('LocalStorage delete place warning:', e);
+  }
+  return updated;
+}
+
+/**
+ * Clear all locations from Cloud Firestore `places`
+ */
+export async function clearAllAdminPlaces() {
+  const current = await fetchAdminPlaces();
+  if (db) {
+    try {
+      await Promise.all(
+        current.map((p) => deleteDoc(doc(db, 'places', p.placeId || p.id)))
+      );
+    } catch (err) {
+      console.warn('Firestore clearAllAdminPlaces warning:', err.message);
+    }
+  }
+  localStorage.setItem(STORAGE_KEYS.PLACES, JSON.stringify([]));
+  return [];
+}
+
+/**
+ * Bulk import multiple locations into Cloud Firestore `places`
+ */
+export async function bulkImportAdminPlaces(placesArray) {
+  if (db) {
+    try {
+      await Promise.all(
+        placesArray.map((item) => {
+          const pid = item.placeId || item.id;
+          return setDoc(doc(db, 'places', pid), {
+            ...item,
+            id: pid,
+            placeId: pid,
+            photos: (item.photos || []).slice(0, 5),
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          });
+        })
+      );
+    } catch (err) {
+      console.warn('Firestore bulkImportAdminPlaces warning:', err.message);
+    }
+  }
+
+  const updated = await fetchAdminPlaces();
+  return updated;
+}
+
+// ==================== 4. ARCHIVES CRUD (users/{userId}/archives/{placeId}) ====================
 
 export async function fetchUserArchives(userId) {
   const storageKey = `${STORAGE_KEYS.ARCHIVES_PREFIX}${userId}`;
 
-  if (isFirebaseActive && db && userId && !userId.startsWith('guest_')) {
+  if (db && userId) {
     try {
       const snap = await getDocs(collection(db, 'users', userId, 'archives'));
       const items = [];
       snap.forEach((docSnap) => items.push(docSnap.data()));
-      if (items.length > 0) {
-        localStorage.setItem(storageKey, JSON.stringify(items));
-        return items;
-      }
+      localStorage.setItem(storageKey, JSON.stringify(items));
+      return items;
     } catch (err) {
       console.warn('Firestore fetchUserArchives fallback:', err.message);
     }
@@ -408,13 +630,14 @@ export async function upsertArchiveJournal(userId, journalPayload) {
     placeId: journalPayload.placeId,
     placeName: journalPayload.placeName,
     category: journalPayload.category,
-    visitedDate: journalPayload.visitedDate || new Date().toISOString().split('T')[0],
+    visitedDate:
+      journalPayload.visitedDate || new Date().toISOString().split('T')[0],
     userRating: Number(journalPayload.userRating) || 5,
     journalNote: (journalPayload.journalNote || '').trim(),
     updatedAt: new Date().toISOString(),
   };
 
-  if (isFirebaseActive && db && userId && !userId.startsWith('guest_')) {
+  if (db && userId) {
     try {
       await setDoc(doc(db, 'users', userId, 'archives', record.placeId), record);
     } catch (err) {
@@ -423,7 +646,9 @@ export async function upsertArchiveJournal(userId, journalPayload) {
   }
 
   const current = await fetchUserArchives(userId);
-  const existingIndex = current.findIndex((item) => item.placeId === record.placeId);
+  const existingIndex = current.findIndex(
+    (item) => item.placeId === record.placeId
+  );
   let updated;
   if (existingIndex >= 0) {
     updated = [...current];
@@ -433,7 +658,10 @@ export async function upsertArchiveJournal(userId, journalPayload) {
   }
 
   try {
-    localStorage.setItem(`${STORAGE_KEYS.ARCHIVES_PREFIX}${userId}`, JSON.stringify(updated));
+    localStorage.setItem(
+      `${STORAGE_KEYS.ARCHIVES_PREFIX}${userId}`,
+      JSON.stringify(updated)
+    );
   } catch (e) {
     console.warn('LocalStorage archive write error:', e);
   }
@@ -442,7 +670,7 @@ export async function upsertArchiveJournal(userId, journalPayload) {
 }
 
 export async function removeArchiveJournal(userId, placeId) {
-  if (isFirebaseActive && db && userId && !userId.startsWith('guest_')) {
+  if (db && userId) {
     try {
       await deleteDoc(doc(db, 'users', userId, 'archives', placeId));
     } catch (err) {
@@ -454,7 +682,10 @@ export async function removeArchiveJournal(userId, placeId) {
   const updated = current.filter((item) => item.placeId !== placeId);
 
   try {
-    localStorage.setItem(`${STORAGE_KEYS.ARCHIVES_PREFIX}${userId}`, JSON.stringify(updated));
+    localStorage.setItem(
+      `${STORAGE_KEYS.ARCHIVES_PREFIX}${userId}`,
+      JSON.stringify(updated)
+    );
   } catch (e) {
     console.warn('LocalStorage archive delete error:', e);
   }
@@ -462,20 +693,18 @@ export async function removeArchiveJournal(userId, placeId) {
   return updated;
 }
 
-// ==================== 3. SAVED PLACES CRUD (users/{userId}/saved/{placeId}) ====================
+// ==================== 5. SAVED PLACES CRUD (users/{userId}/saved/{placeId}) ====================
 
 export async function fetchUserSavedPlaces(userId) {
   const storageKey = `${STORAGE_KEYS.SAVED_PREFIX}${userId}`;
 
-  if (isFirebaseActive && db && userId && !userId.startsWith('guest_')) {
+  if (db && userId) {
     try {
       const snap = await getDocs(collection(db, 'users', userId, 'saved'));
       const items = [];
       snap.forEach((docSnap) => items.push(docSnap.data()));
-      if (items.length > 0) {
-        localStorage.setItem(storageKey, JSON.stringify(items));
-        return items;
-      }
+      localStorage.setItem(storageKey, JSON.stringify(items));
+      return items;
     } catch (err) {
       console.warn('Firestore fetchUserSavedPlaces fallback:', err.message);
     }
@@ -500,7 +729,7 @@ export async function toggleSavedPlace(userId, place) {
   let updated;
   if (exists) {
     updated = current.filter((item) => item.placeId !== targetPlaceId);
-    if (isFirebaseActive && db && userId && !userId.startsWith('guest_')) {
+    if (db && userId) {
       try {
         await deleteDoc(doc(db, 'users', userId, 'saved', targetPlaceId));
       } catch (err) {
@@ -515,7 +744,7 @@ export async function toggleSavedPlace(userId, place) {
       savedAt: new Date().toISOString(),
     };
     updated = [record, ...current];
-    if (isFirebaseActive && db && userId && !userId.startsWith('guest_')) {
+    if (db && userId) {
       try {
         await setDoc(doc(db, 'users', userId, 'saved', targetPlaceId), record);
       } catch (err) {
@@ -525,7 +754,10 @@ export async function toggleSavedPlace(userId, place) {
   }
 
   try {
-    localStorage.setItem(`${STORAGE_KEYS.SAVED_PREFIX}${userId}`, JSON.stringify(updated));
+    localStorage.setItem(
+      `${STORAGE_KEYS.SAVED_PREFIX}${userId}`,
+      JSON.stringify(updated)
+    );
   } catch (e) {
     console.warn('LocalStorage saved write error:', e);
   }

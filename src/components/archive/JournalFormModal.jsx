@@ -18,6 +18,7 @@ export default function JournalFormModal() {
     places,
     getJournalForPlace,
     handleSaveJournal,
+    setIsAdminModalOpen,
   } = useApp();
 
   const [selectedPlaceId, setSelectedPlaceId] = useState('');
@@ -164,18 +165,36 @@ export default function JournalFormModal() {
                   {catInfo.label}
                 </span>
               </label>
-              <select
-                id="journal-place-select"
-                value={selectedPlaceId}
-                onChange={(e) => handlePlaceChange(e.target.value)}
-                className="w-full h-[46px] px-3.5 rounded-2xl bg-[#F5EFE6] text-[#5C4033] text-sm font-semibold border-[1.5px] border-[#5C4033] focus:outline-none"
-              >
-                {places.map((p) => (
-                  <option key={p.placeId} value={p.placeId}>
-                    [{CATEGORY_CONFIG[p.category]?.label}] {p.displayName || p.name}
-                  </option>
-                ))}
-              </select>
+              {places.length === 0 ? (
+                <div className="p-3 rounded-2xl bg-[#F5EFE6] border-[1.5px] border-[#5C4033] flex items-center justify-between gap-2">
+                  <span className="text-xs font-medium text-[#8C7365]">
+                    Belum ada lokasi yang diinput Admin.
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsJournalModalOpen(false);
+                      setIsAdminModalOpen(true);
+                    }}
+                    className="h-9 px-3 rounded-xl bg-[#FFE699] text-[#5C4033] text-xs font-bold border border-[#5C4033]"
+                  >
+                    Input di Admin
+                  </button>
+                </div>
+              ) : (
+                <select
+                  id="journal-place-select"
+                  value={selectedPlaceId}
+                  onChange={(e) => handlePlaceChange(e.target.value)}
+                  className="w-full h-[46px] px-3.5 rounded-2xl bg-[#F5EFE6] text-[#5C4033] text-sm font-semibold border-[1.5px] border-[#5C4033] focus:outline-none"
+                >
+                  {places.map((p) => (
+                    <option key={p.placeId} value={p.placeId}>
+                      [{CATEGORY_CONFIG[p.category]?.label}] {p.displayName || p.name}
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
 
             {/* Tanggal Kunjungan */}
