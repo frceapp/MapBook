@@ -240,6 +240,25 @@ export default function PlaceDetailModal() {
                         'Destinasi literasi Yogyakarta yang sangat berkesan dan penuh inspirasi!'}
                       &rdquo;
                     </p>
+
+                    {/* Galeri Mini Polaroid jika User Mengupload Foto pada Jurnal Ini */}
+                    {Array.isArray(existingJournal?.userPhotos) &&
+                      existingJournal.userPhotos.length > 0 && (
+                        <div className="pt-2 flex items-center gap-2 overflow-x-auto">
+                          {existingJournal.userPhotos.map((uPhoto, idx) => (
+                            <div
+                              key={idx}
+                              className="w-16 h-16 rounded-xl bg-[#FFFDF9] p-1 border-[1.5px] border-[#5C4033] shadow-[0_2px_0_#5C4033] shrink-0"
+                            >
+                              <img
+                                src={uPhoto}
+                                alt={`Dokumentasi Pribadi ${idx + 1}`}
+                                className="w-full h-full object-cover rounded-lg"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      )}
                   </div>
                 )}
               </div>

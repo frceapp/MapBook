@@ -654,6 +654,10 @@ export async function fetchUserArchives(userId) {
 }
 
 export async function upsertArchiveJournal(userId, journalPayload) {
+  const cleanUserPhotos = Array.isArray(journalPayload.userPhotos)
+    ? journalPayload.userPhotos.filter(Boolean).slice(0, 3)
+    : [];
+
   const record = {
     placeId: journalPayload.placeId,
     placeName: journalPayload.placeName,
@@ -662,6 +666,8 @@ export async function upsertArchiveJournal(userId, journalPayload) {
       journalPayload.visitedDate || new Date().toISOString().split('T')[0],
     googleRating: Number(journalPayload.googleRating) || 4.8,
     journalNote: (journalPayload.journalNote || '').trim(),
+    userPhotos: cleanUserPhotos,
+    userPhoto: cleanUserPhotos[0] || null,
     updatedAt: new Date().toISOString(),
   };
 

@@ -10,6 +10,7 @@ import {
   Trash2,
   BookOpen,
   Award,
+  Camera,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { CATEGORIES, CATEGORY_CONFIG } from '../../services/yogyakartaPlaces';
@@ -54,6 +55,7 @@ export default function ArchiveView() {
   } = useApp();
 
   const [categoryTab, setCategoryTab] = useState(CATEGORIES.ALL);
+  const [activePhotoIndexByPlace, setActivePhotoIndexByPlace] = useState({});
 
   // Merge user's real archives with simulated entries when "Simulasi 100% Selesai (Demo Juri)" is toggled ON
   const displayedArchives = useMemo(() => {
@@ -205,7 +207,16 @@ export default function ArchiveView() {
                 );
                 const catInfo =
                   CATEGORY_CONFIG[entry.category] || CATEGORY_CONFIG.museum;
+                const userUploadedList = Array.isArray(entry.userPhotos)
+                  ? entry.userPhotos.filter(Boolean)
+                  : entry.userPhoto
+                  ? [entry.userPhoto]
+                  : [];
+                const activeUserPhotoIdx =
+                  activePhotoIndexByPlace[entry.placeId] || 0;
                 const thumbnailPhoto =
+                  userUploadedList[activeUserPhotoIdx] ||
+                  userUploadedList[0] ||
                   placeObj?.photos?.[0] ||
                   YOGYAKARTA_REAL_FALLBACK_PHOTOS[entry.category]?.[0] ||
                   YOGYAKARTA_REAL_FALLBACK_PHOTOS.museum[0];
@@ -247,6 +258,44 @@ export default function ArchiveView() {
                           />
                           <span>{gmapsRating} G-Maps</span>
                         </span>
+
+                        {/* Badge & Mini Switcher jika User Mengupload Foto Dokumentasi */}
+                        {userUploadedList.length > 0 && (
+                          <div className="absolute bottom-2 left-2.5 right-2.5 flex items-center justify-between gap-2">
+                            <span className="px-2.5 py-0.5 rounded-full bg-[#FFB7C5] border border-[#5C4033] text-[11px] font-bold text-[#5C4033] shadow-sm inline-flex items-center gap-1">
+                              <Camera className="w-3 h-3 text-[#5C4033]" strokeWidth={2.2} />
+                              <span>{userUploadedList.length} Foto Jurnalmu</span>
+                            </span>
+
+                            {userUploadedList.length > 1 && (
+                              <div className="flex items-center gap-1 bg-[#FFFDF9]/90 p-1 rounded-lg border border-[#5C4033]">
+                                {userUploadedList.map((uPhoto, pIdx) => (
+                                  <button
+                                    key={pIdx}
+                                    type="button"
+                                    onClick={() =>
+                                      setActivePhotoIndexByPlace((prev) => ({
+                                        ...prev,
+                                        [entry.placeId]: pIdx,
+                                      }))
+                                    }
+                                    className={`w-6 h-6 rounded overflow-hidden border transition-transform ${
+                                      activeUserPhotoIdx === pIdx
+                                        ? 'border-2 border-[#5C4033] scale-105'
+                                        : 'border-[#5C4033]/40 opacity-75'
+                                    }`}
+                                  >
+                                    <img
+                                      src={uPhoto}
+                                      alt={`Foto ${pIdx + 1}`}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
 
                       {/* Nama Tempat & Tanggal Kunjungan */}
